@@ -1,6 +1,23 @@
+<div align="center">
+  <img src="assets/brand-banner-v2.svg" alt="Devarent — Cloud, Data & AI Engineering" width="100%" />
+</div>
+
 # Repo Atlas — Cloud & Data Control Center
 
 Versi Next.js dari katalog repo. Menggantikan halaman HTML statis di `repo-atlas/`.
+
+## Identitas visual
+
+Logo baru memakai monogram **AF** geometris dengan gradasi cyan → indigo → violet di atas latar navy. Aset:
+
+| File | Dipakai untuk |
+| --- | --- |
+| `assets/avatar-512.png` | **GitHub profile avatar** — unggah lewat Settings → Profile → Avatar |
+| `assets/social-preview.png` | **Social preview** repo — unggah lewat Settings → Social preview |
+| `assets/brand-logo.svg` | Logo vektor di dashboard dan README |
+| `assets/brand-banner.svg` | Banner lebar untuk README |
+
+> GitHub tidak menyediakan API publik untuk mengganti avatar/social preview, jadi dua unggahan di atas harus lewat UI Settings. Semua file sudah tersedia di repo ini dan di `devarent/devarent/assets/`.
 
 ## Stack
 
