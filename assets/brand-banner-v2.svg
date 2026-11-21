@@ -27,13 +27,17 @@
   <!-- monogram -->
   <g transform="translate(120 176)">
     <rect width="288" height="288" rx="64" fill="#0D1426" stroke="#22304D"/>
-    <g transform="translate(24 24) scale(0.46875)" fill="url(#mark)">
-      <path d="M112 398 L176 398 L252 146 L212 134 Z"/>
-      <path d="M212 134 L252 146 L328 398 L264 398 Z"/>
-      <rect x="168" y="302" width="112" height="27" rx="4"/>
-      <rect x="352" y="146" width="31" height="252" rx="5"/>
-      <rect x="352" y="146" width="94" height="31" rx="5"/>
-      <rect x="352" y="250" width="74" height="27" rx="5"/>
+    <g transform="translate(24 24) scale(0.46875)">
+      <circle cx="256" cy="256" r="200" fill="none" stroke="url(#mark)" stroke-opacity="0.5" stroke-width="3"/>
+      <circle cx="256" cy="256" r="166" fill="none" stroke="url(#mark)" stroke-opacity="0.28" stroke-width="1.5"/>
+      <g fill="none" stroke="url(#mark)" stroke-width="8" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M112 398 L176 398 L252 146 L212 134 Z"/>
+        <path d="M212 134 L252 146 L328 398 L264 398 Z"/>
+        <rect x="168" y="302" width="112" height="27" rx="4"/>
+        <rect x="352" y="146" width="31" height="252" rx="5"/>
+        <rect x="352" y="146" width="94" height="31" rx="5"/>
+        <rect x="352" y="250" width="74" height="27" rx="5"/>
+      </g>
     </g>
   </g>
 

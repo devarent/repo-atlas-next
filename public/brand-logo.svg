@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="t d">
-  <title id="t">AF — Arya Fatthurahman monogram, version 2</title>
-  <desc id="d">Geometric AF monogram in cyan-to-violet gradient on a deep navy rounded square, with a subtle technical grid.</desc>
+  <title id="t">AF — Arya Fatthurahman monogram, version 3</title>
+  <desc id="d">Geometric AF monogram with gradient outline and orbit rings on deep navy.</desc>
   <defs>
     <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#22D3EE"/>
@@ -24,7 +24,10 @@
   <rect width="512" height="512" rx="112" fill="url(#glow)"/>
   <circle cx="404" cy="418" r="96" fill="#22D3EE" opacity="0.10" filter="url(#soft)"/>
 
-  <g fill="url(#mark)">
+  <circle cx="256" cy="256" r="212" fill="none" stroke="url(#mark)" stroke-opacity="0.5" stroke-width="2.5"/>
+  <circle cx="256" cy="256" r="178" fill="none" stroke="url(#mark)" stroke-opacity="0.28" stroke-width="1.5"/>
+
+  <g fill="none" stroke="url(#mark)" stroke-width="11" stroke-linejoin="round" stroke-linecap="round">
     <!-- A · left leg -->
     <path d="M112 398 L176 398 L252 146 L212 134 Z"/>
     <!-- A · right leg -->

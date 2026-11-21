@@ -292,7 +292,7 @@ export default function Dashboard() {
               </div>
 
               {view === "grid" ? (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="animate-atlas-fade-up grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {filteredRepos.map((r) => <RepoCard key={r.r} repo={r} onOpen={setDetail} />)}
                 </div>
               ) : (
@@ -347,7 +347,7 @@ export default function Dashboard() {
                       <h3 className="text-sm font-bold uppercase tracking-widest text-[color:var(--primary)]">{cat}</h3>
                       <Separator className="flex-1" /><Badge variant="outline">{list.length}</Badge>
                     </div>
-                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{list.map((d) => <DbCard key={d.name} db={d} />)}</div>
+                    <div className="animate-atlas-fade-up grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{list.map((d) => <DbCard key={d.name} db={d} />)}</div>
                   </section>
                 );
               })}
