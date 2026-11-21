@@ -8,6 +8,11 @@
 
 <br><br>
 
+[![Source](https://img.shields.io/badge/Source-repo--atlas--next-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/devarent/repo-atlas-next)
+[![Live dashboard](https://img.shields.io/badge/Dashboard-localhost%3A3100-22d3ee?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://github.com/devarent/repo-atlas-next#jalankan)
+
+<br><br>
+
 ## 🗺️ Repo Atlas — Cloud & Data Control Center
 
 Seluruh repository dipetakan ke **9 konstelasi bertema negara**, lalu disambungkan ke **26 teknologi data** dan toolchain cloud: Terraform, AWS EC2 + Elastic IP, Docker, Kubernetes/Helm, GitHub Actions, Databricks, dan Keras.
