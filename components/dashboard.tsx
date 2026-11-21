@@ -182,19 +182,19 @@ function DbCard({ db }: { db: DatabaseTech }) {
           <span className="truncate">{db.image}</span>
         </div>
         <div className="flex flex-wrap gap-2">
-          <a href={db.url} target="_blank" rel="noopener">
-            <Button size="sm" variant="secondary">
+          <Button asChild size="sm" variant="secondary">
+            <a href={db.url} target="_blank" rel="noopener">
               <BookOpen className="h-3.5 w-3.5" />
               Docs
-            </Button>
-          </a>
+            </a>
+          </Button>
           {db.lab && (
-            <a href={`https://github.com/devarent/${db.lab}`} target="_blank" rel="noopener">
-              <Button size="sm" variant="ghost">
+            <Button asChild size="sm" variant="ghost">
+              <a href={`https://github.com/devarent/${db.lab}`} target="_blank" rel="noopener">
                 <GitBranch className="h-3.5 w-3.5" />
                 Lab
-              </Button>
-            </a>
+              </a>
+            </Button>
           )}
         </div>
       </CardContent>
@@ -209,9 +209,11 @@ export default function Dashboard() {
   const [kind, setKind] = React.useState("Semua");
   const [view, setView] = React.useState<"grid" | "table">("grid");
   const [sort, setSort] = React.useState<SortKey>("c");
+  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("asc");
   const [dbQuery, setDbQuery] = React.useState("");
   const [dbCategory, setDbCategory] = React.useState("Semua");
   const [open, setOpen] = React.useState(false);
+  const [commandQuery, setCommandQuery] = React.useState("");
   const [detail, setDetail] = React.useState<RepoItem | null>(null);
   const [mobileNav, setMobileNav] = React.useState(false);
   const [dark, setDark] = React.useState(true);
@@ -220,21 +222,58 @@ export default function Dashboard() {
   const [region, setRegion] = React.useState("us-east-1");
   const [user, setUser] = React.useState("ubuntu");
 
+  const toastTimer = React.useRef<number | null>(null);
+
   const notify = React.useCallback((msg: string) => {
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
     setToast(msg);
-    setTimeout(() => setToast(null), 2200);
+    toastTimer.current = window.setTimeout(() => setToast(null), 2200);
   }, []);
+
+  React.useEffect(
+    () => () => {
+      if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    },
+    [],
+  );
 
   const copy = React.useCallback(
     async (value: string, label: string) => {
       try {
-        await navigator.clipboard.writeText(value);
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(value);
+        } else {
+          // Fallback for plain-HTTP deployments (e.g. public Elastic IP without TLS).
+          const area = document.createElement("textarea");
+          area.value = value;
+          area.setAttribute("readonly", "");
+          area.style.position = "fixed";
+          area.style.top = "-9999px";
+          area.style.opacity = "0";
+          document.body.appendChild(area);
+          area.select();
+          const ok = document.execCommand("copy");
+          document.body.removeChild(area);
+          if (!ok) throw new Error("copy command rejected");
+        }
         notify(`${label} disalin`);
       } catch {
         notify("Clipboard tidak tersedia");
       }
     },
     [notify],
+  );
+
+  const changeSort = React.useCallback(
+    (key: SortKey) => {
+      if (key === sort) {
+        setSortDir((dir) => (dir === "asc" ? "desc" : "asc"));
+      } else {
+        setSort(key);
+        setSortDir("asc");
+      }
+    },
+    [sort],
   );
 
   React.useEffect(() => {
@@ -249,8 +288,12 @@ export default function Dashboard() {
         /* abaikan */
       }
     }
+    // The inline script in the root layout applies the stored theme before
+    // hydration; sync React state with it here so there is no dark flash.
     const savedDark = localStorage.getItem("atlas-theme");
-    if (savedDark === "light") setDark(false);
+    const nextDark = savedDark !== "light";
+    document.documentElement.classList.toggle("dark", nextDark);
+    setDark(nextDark);
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -265,7 +308,13 @@ export default function Dashboard() {
     localStorage.setItem("atlas-ec2", JSON.stringify({ ip, region, user }));
   }, [ip, region, user]);
 
+  // Skip the first run: the mount effect above already applied the stored theme.
+  const themeSynced = React.useRef(false);
   React.useEffect(() => {
+    if (!themeSynced.current) {
+      themeSynced.current = true;
+      return;
+    }
     document.documentElement.classList.toggle("dark", dark);
     localStorage.setItem("atlas-theme", dark ? "dark" : "light");
   }, [dark]);
@@ -279,8 +328,11 @@ export default function Dashboard() {
       const t = trackByKey[r.t];
       return [r.r, r.c, r.l, r.d, r.y, t.word, t.country, ...r.k].join(" ").toLowerCase().includes(q);
     });
-    return [...list].sort((a, b) => String(a[sort]).localeCompare(String(b[sort])));
-  }, [query, track, kind, sort]);
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...list].sort(
+      (a, b) => String(a[sort]).localeCompare(String(b[sort]), "id") * dir,
+    );
+  }, [query, track, kind, sort, sortDir]);
 
   const filteredDbs = React.useMemo(() => {
     const q = dbQuery.trim().toLowerCase();
@@ -298,9 +350,9 @@ export default function Dashboard() {
         ...databases.map((d) => ({ label: d.name, meta: `database · ${d.category}`, url: d.url })),
         ...references.map((r) => ({ label: r.title, meta: `referensi · ${r.group}`, url: r.url })),
       ]
-        .filter((r) => r.label.toLowerCase().includes(query.toLowerCase()))
+        .filter((r) => r.label.toLowerCase().includes(commandQuery.trim().toLowerCase()))
         .slice(0, 8),
-    [query],
+    [commandQuery],
   );
 
   const sshCommand = `ssh -i ~/.ssh/id_rsa ${user}@${ip || "<PUBLIC_IP>"}`;
@@ -316,6 +368,8 @@ export default function Dashboard() {
           <img
             src="/brand-logo.svg"
             alt="Logo Devarent"
+            width={44}
+            height={44}
             className="relative h-11 w-11 rounded-2xl ring-1 ring-white/10"
           />
         </div>
@@ -327,13 +381,14 @@ export default function Dashboard() {
 
       <div className="mx-5 hairline" />
 
-      <nav className="flex-1 space-y-1.5 p-3">
+      <nav aria-label="Navigasi utama" className="flex-1 space-y-1.5 p-3">
         {navItems.map((n) => {
           const active = tab === n.value;
           return (
             <button
               key={n.value}
               onClick={() => setTab(n.value)}
+              aria-current={active ? "page" : undefined}
               className={cn(
                 "group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200",
                 active
@@ -382,12 +437,26 @@ export default function Dashboard() {
 
   return (
     <TooltipProvider>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-[var(--card-solid)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
+      >
+        Lewati ke konten
+      </a>
       {Sidebar}
       <div className="lg:pl-[268px]">
         {/* TOPBAR */}
         <div className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--topbar)] backdrop-blur-2xl">
           <div className="mx-auto flex max-w-[1500px] items-center gap-3 px-4 py-3 sm:px-8">
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileNav(!mobileNav)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-label={mobileNav ? "Tutup menu navigasi" : "Buka menu navigasi"}
+              aria-expanded={mobileNav}
+              aria-controls={mobileNav ? "mobile-nav" : undefined}
+              onClick={() => setMobileNav(!mobileNav)}
+            >
               {mobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
             <div className="min-w-0 flex-1">
@@ -397,14 +466,22 @@ export default function Dashboard() {
               <div className="truncate text-xs text-muted">Built in public by Arya Fatthurahman</div>
             </div>
 
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog
+              open={open}
+              onOpenChange={(next) => {
+                setOpen(next);
+                if (!next) setCommandQuery("");
+              }}
+            >
               <DialogTrigger asChild>
-                <Button variant="secondary" size="sm">
-                  <Command className="h-4 w-4" />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  aria-label="Cari cepat"
+                  aria-keyshortcuts="Control+K Meta+K"
+                >
+                  <Command className="h-4 w-4" aria-hidden />
                   <span className="hidden sm:inline">Cari cepat</span>
-                  <kbd className="ml-1 rounded border border-[var(--border)] bg-[var(--hover-1)] px-1.5 py-0.5 text-[10px] font-semibold text-muted">
-                    ⌘K
-                  </kbd>
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -415,10 +492,13 @@ export default function Dashboard() {
                 <DialogDescription>Repo, teknologi database, atau referensi.</DialogDescription>
                 <Input
                   autoFocus
+                  type="search"
+                  autoComplete="off"
+                  aria-label="Cari repo, database, atau referensi"
                   className="my-4"
                   placeholder="Ketik nama…"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  value={commandQuery}
+                  onChange={(e) => setCommandQuery(e.target.value)}
                 />
                 <div className="scrollbar-thin max-h-80 space-y-1 overflow-y-auto">
                   {commandResults.map((r) => (
@@ -441,23 +521,38 @@ export default function Dashboard() {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={() => setDark(!dark)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={dark ? "Aktifkan tema terang" : "Aktifkan tema gelap"}
+                  aria-pressed={dark}
+                  onClick={() => setDark(!dark)}
+                >
                   {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Ganti tema</TooltipContent>
             </Tooltip>
-            <a href="https://github.com/devarent" target="_blank" rel="noopener">
-              <Button variant="ghost" size="icon">
+            <Button asChild variant="ghost" size="icon">
+              <a
+                href="https://github.com/devarent"
+                target="_blank"
+                rel="noopener"
+                aria-label="Profil GitHub devarent"
+              >
                 <Github className="h-4 w-4" />
-              </Button>
-            </a>
+              </a>
+            </Button>
           </div>
           <div className="aurora-line h-px w-full opacity-60" />
         </div>
 
         {mobileNav && (
-          <nav className="grid grid-cols-2 gap-2 border-b border-[var(--border)] bg-[var(--sidebar)] p-3 backdrop-blur-xl lg:hidden">
+          <nav
+            id="mobile-nav"
+            aria-label="Navigasi seluler"
+            className="grid grid-cols-2 gap-2 border-b border-[var(--border)] bg-[var(--sidebar)] p-3 backdrop-blur-xl lg:hidden"
+          >
             {navItems.map((n) => (
               <button
                 key={n.value}
@@ -465,6 +560,7 @@ export default function Dashboard() {
                   setTab(n.value);
                   setMobileNav(false);
                 }}
+                aria-current={tab === n.value ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition",
                   tab === n.value
@@ -479,7 +575,11 @@ export default function Dashboard() {
           </nav>
         )}
 
-        <main className="mx-auto max-w-[1500px] px-4 pb-24 pt-6 sm:px-8 sm:pt-8">
+        <main
+          id="main"
+          tabIndex={-1}
+          className="mx-auto max-w-[1500px] px-4 pb-24 pt-6 focus:outline-none sm:px-8 sm:pt-8"
+        >
           {/* HERO */}
           <header className="glass relative mb-8 overflow-hidden rounded-[28px] p-6 sm:p-9">
             <div aria-hidden className="hero-aurora" />
@@ -517,12 +617,12 @@ export default function Dashboard() {
                   Jelajahi 52 repo
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
-                <a href="https://github.com/devarent" target="_blank" rel="noopener">
-                  <Button size="lg" variant="secondary">
+                <Button asChild size="lg" variant="secondary">
+                  <a href="https://github.com/devarent" target="_blank" rel="noopener">
                     <Github className="h-4 w-4" />
                     GitHub profile
-                  </Button>
-                </a>
+                  </a>
+                </Button>
                 <div className="ml-auto hidden items-center gap-2 text-[11px] text-muted xl:flex">
                   <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
                   Astral Grain · Arc motion
@@ -541,7 +641,7 @@ export default function Dashboard() {
           </header>
 
           <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="lg:hidden">
+            <TabsList aria-label="Bagian dashboard" className="lg:hidden">
               {navItems.map((n) => (
                 <TabsTrigger key={n.value} value={n.value}>
                   {n.label}
@@ -566,6 +666,7 @@ export default function Dashboard() {
               <div className="mb-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
                 <button
                   onClick={() => setTrack(null)}
+                  aria-pressed={!track}
                   className={cn(
                     "group rounded-2xl border p-3 text-left text-sm transition-all duration-200",
                     !track
@@ -586,6 +687,7 @@ export default function Dashboard() {
                       <TooltipTrigger asChild>
                         <button
                           onClick={() => setTrack(active ? null : t.key)}
+                          aria-pressed={active}
                           className={cn(
                             "group relative overflow-hidden rounded-2xl border p-3 text-left text-sm transition-all duration-200",
                             active
@@ -626,18 +728,22 @@ export default function Dashboard() {
                 <div className="relative min-w-[240px] flex-1">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                   <Input
+                    type="search"
+                    autoComplete="off"
+                    aria-label="Cari repository"
                     className="pl-10"
                     placeholder="Cari repo, julukan, topik, bahasa…"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                   />
                 </div>
-                <div className="glass flex rounded-xl p-1">
+                <div role="group" aria-label="Mode tampilan" className="glass flex rounded-xl p-1">
                   <Button
                     size="sm"
                     variant={view === "grid" ? "default" : "ghost"}
                     onClick={() => setView("grid")}
                     aria-label="Tampilan grid"
+                    aria-pressed={view === "grid"}
                   >
                     <LayoutGrid className="h-4 w-4" />
                   </Button>
@@ -646,6 +752,7 @@ export default function Dashboard() {
                     variant={view === "table" ? "default" : "ghost"}
                     onClick={() => setView("table")}
                     aria-label="Tampilan tabel"
+                    aria-pressed={view === "table"}
                   >
                     <List className="h-4 w-4" />
                   </Button>
@@ -657,6 +764,7 @@ export default function Dashboard() {
                   <button
                     key={k}
                     onClick={() => setKind(k)}
+                    aria-pressed={k === kind}
                     className={cn(
                       "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97]",
                       k === kind
@@ -689,17 +797,37 @@ export default function Dashboard() {
                               ["y", "Jenis"],
                               ["l", "Bahasa"],
                             ] as [SortKey, string][]
-                          ).map(([key, label]) => (
-                            <th key={key} className="whitespace-nowrap px-4 py-3 font-semibold">
-                              <button
-                                className="flex items-center gap-1 transition hover:text-foreground"
-                                onClick={() => setSort(key)}
+                          ).map(([key, label]) => {
+                            const active = sort === key;
+                            return (
+                              <th
+                                key={key}
+                                scope="col"
+                                aria-sort={
+                                  active ? (sortDir === "asc" ? "ascending" : "descending") : "none"
+                                }
+                                className="whitespace-nowrap px-4 py-3 font-semibold"
                               >
-                                {label}
-                                <ArrowUpDown className="h-3 w-3" />
-                              </button>
-                            </th>
-                          ))}
+                                <button
+                                  type="button"
+                                  className="flex items-center gap-1 rounded transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                                  aria-label={`Urutkan berdasarkan ${label}${
+                                    active ? (sortDir === "asc" ? ", menaik" : ", menurun") : ""
+                                  }`}
+                                  onClick={() => changeSort(key)}
+                                >
+                                  {label}
+                                  <ArrowUpDown
+                                    aria-hidden
+                                    className={cn(
+                                      "h-3 w-3 transition",
+                                      active ? "text-[var(--primary-text)]" : "opacity-50",
+                                    )}
+                                  />
+                                </button>
+                              </th>
+                            );
+                          })}
                         </tr>
                       </thead>
                       <tbody>
@@ -714,7 +842,19 @@ export default function Dashboard() {
                               <td className="whitespace-nowrap px-4 py-3 font-semibold">
                                 {t.flag} {r.c}
                               </td>
-                              <td className="px-4 py-3 font-mono text-xs text-muted">devarent/{r.r}</td>
+                              <td className="px-4 py-3 font-mono text-xs text-muted">
+                                <button
+                                  type="button"
+                                  aria-label={`Lihat detail ${r.c}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDetail(r);
+                                  }}
+                                  className="rounded font-mono text-xs text-muted underline-offset-4 transition hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                                >
+                                  devarent/{r.r}
+                                </button>
+                              </td>
                               <td className="px-4 py-3">
                                 <Badge variant="outline" style={{ color: t.color, borderColor: `${t.color}66` }}>
                                   {t.word}
@@ -745,6 +885,9 @@ export default function Dashboard() {
                 <div className="relative min-w-[240px] flex-1">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
                   <Input
+                    type="search"
+                    autoComplete="off"
+                    aria-label="Cari teknologi data"
                     className="pl-10"
                     placeholder="Cari teknologi, use case, docker image…"
                     value={dbQuery}
@@ -756,6 +899,7 @@ export default function Dashboard() {
                     <button
                       key={c}
                       onClick={() => setDbCategory(c)}
+                      aria-pressed={c === dbCategory}
                       className={cn(
                         "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97]",
                         c === dbCategory
@@ -810,7 +954,12 @@ export default function Dashboard() {
                   <CardContent className="space-y-2">
                     <div className="code-bg flex items-center gap-2 rounded-xl border p-3">
                       <code className="flex-1 font-mono text-xs">{localUrl}</code>
-                      <Button size="sm" variant="secondary" onClick={() => copy(localUrl, "URL lokal")}>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        aria-label="Salin URL lokal"
+                        onClick={() => copy(localUrl, "URL lokal")}
+                      >
                         <Copy className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -829,14 +978,43 @@ export default function Dashboard() {
                   <CardContent className="space-y-2">
                     <div className="code-bg flex items-center gap-2 rounded-xl border p-3">
                       <code className="flex-1 font-mono text-xs">{publicUrl}</code>
-                      <Button size="sm" variant="secondary" onClick={() => copy(publicUrl, "URL publik")}>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        aria-label="Salin URL publik"
+                        onClick={() => copy(publicUrl, "URL publik")}
+                      >
                         <Copy className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
-                      <Input value={ip} onChange={(e) => setIp(e.target.value)} placeholder="Public IP" className="text-xs" />
-                      <Input value={region} onChange={(e) => setRegion(e.target.value)} placeholder="region" className="text-xs" />
-                      <Input value={user} onChange={(e) => setUser(e.target.value)} placeholder="user" className="text-xs" />
+                      <Input
+                        value={ip}
+                        onChange={(e) => setIp(e.target.value)}
+                        placeholder="Public IP"
+                        aria-label="Public IP"
+                        autoComplete="off"
+                        spellCheck={false}
+                        className="text-xs"
+                      />
+                      <Input
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                        placeholder="region"
+                        aria-label="Region AWS"
+                        autoComplete="off"
+                        spellCheck={false}
+                        className="text-xs"
+                      />
+                      <Input
+                        value={user}
+                        onChange={(e) => setUser(e.target.value)}
+                        placeholder="user"
+                        aria-label="SSH user"
+                        autoComplete="off"
+                        spellCheck={false}
+                        className="text-xs"
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -956,12 +1134,12 @@ export default function Dashboard() {
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <p className="text-sm leading-relaxed text-muted">{r.fit}</p>
-                      <a href={`https://github.com/devarent/${r.repo}`} target="_blank" rel="noopener">
-                        <Button size="sm" variant="secondary">
+                      <Button asChild size="sm" variant="secondary">
+                        <a href={`https://github.com/devarent/${r.repo}`} target="_blank" rel="noopener">
                           <ExternalLink className="mr-1 h-3.5 w-3.5" />
                           {r.repo}
-                        </Button>
-                      </a>
+                        </a>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -985,7 +1163,13 @@ export default function Dashboard() {
                     {references
                       .filter((r) => r.group === group)
                       .map((r) => (
-                        <a key={r.url} href={r.url} target="_blank" rel="noopener" className="group block">
+                        <a
+                          key={r.url}
+                          href={r.url}
+                          target="_blank"
+                          rel="noopener"
+                          className="group block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+                        >
                           <Card className="h-full">
                             <CardHeader>
                               <CardTitle className="flex items-start justify-between gap-2 text-sm">
@@ -1021,7 +1205,11 @@ export default function Dashboard() {
       </div>
 
       {toast && (
-        <div className="glass-strong fixed bottom-5 right-5 z-[100] flex items-center gap-2 rounded-2xl px-4 py-3 text-sm shadow-2xl">
+        <div
+          role="status"
+          aria-live="polite"
+          className="glass-strong fixed bottom-5 left-4 right-4 z-[100] flex items-center gap-2 rounded-2xl px-4 py-3 text-sm shadow-2xl sm:left-auto sm:right-5 sm:w-auto"
+        >
           <span className="grid h-5 w-5 place-items-center rounded-full bg-emerald-500/20 text-emerald-400">
             <Check className="h-3.5 w-3.5" />
           </span>
@@ -1048,12 +1236,12 @@ export default function Dashboard() {
               <p className="text-sm leading-relaxed">{detail.d}</p>
               <p className="code-bg mt-3 rounded-xl border p-3 text-xs">{detail.k.map((k) => `#${k}`).join("  ")}</p>
               <div className="mt-5 flex flex-wrap gap-2">
-                <a href={`https://github.com/devarent/${detail.r}`} target="_blank" rel="noopener">
-                  <Button>
+                <Button asChild>
+                  <a href={`https://github.com/devarent/${detail.r}`} target="_blank" rel="noopener">
                     <ExternalLink className="mr-1 h-4 w-4" />
                     Buka repository
-                  </Button>
-                </a>
+                  </a>
+                </Button>
                 <Button
                   variant="secondary"
                   onClick={() => copy(`git clone https://github.com/devarent/${detail.r}.git`, "Perintah clone")}

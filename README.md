@@ -50,6 +50,15 @@ npm run build        # verifikasi produksi
 - Panel akses ganda: **localhost** (`http://localhost:3100`) dan **IP publik EC2** (`http://<Elastic_IP>`).
 - Dialog detail repo dengan tombol salin `git clone`.
 
+## Aksesibilitas & SEO (Astral Grain Edition)
+
+- Fokus keyboard: skip link **Lewati ke konten**, pola `:focus-visible` untuk semua interaksi, dan tabstop kartu/rata table pada kontainer karet.
+- Nama akses tersedia lewat `aria-label`, `aria-labelledby`, `aria-describedby`, `aria-keyshortcuts`, `aria-sort`, `aria-pressed`, dan `aria-current`.
+- Detail reachability: tabel **Repos** punya `scope="col"`, sorter menampilkan arah urut melalui `aria-sort`, dan pencarian command dipisah dari search repo (Ctrl+K).
+- Input di tab **Cloud** punya label: `Public IP`, `Region AWS`, `SSH user`.
+- Halaman 404 (`app/not-found.tsx`) dan error page (`app/error.tsx`) dengan desain **Astral Grain** dan tombol kembali ke dashboard.
+- Meta lengkap: JSON-LD `WebSite`/`Person`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `apple-icon.png`, OG + Twitter card.
+
 ## Deploy ke localhost / IP publik
 
 ```bash
@@ -84,6 +93,9 @@ Ctrl+K membuka pencarian global lintas repo, database, dan referensi.
 - Panel "Koneksi EC2" hanya menyimpan **IP, region, dan user SSH** di `localStorage` browser (untuk membentuk perintah SSH).
 - Jalankan `aws login` atau isi `aws configure` dengan kredensial asli di WSL 2 sebelum `terraform apply`.
 - Jalankan `terraform destroy` setelah selesai agar EIP/EC2 tidak ditagih.
+- Server `next start` memakai **binding `::`** (IPv6 dual-stack), agar bekerja di localhost, LAN, dan public IP.
+- Security headers diset di `next.config.ts`: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, dan `poweredByHeader: false`.
+- Copy supports browser clipboard plus an HTTP fallback via `document.execCommand` when on insecure contexts.
 
 ## Sumber data
 

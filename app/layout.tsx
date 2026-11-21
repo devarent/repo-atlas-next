@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,6 +8,44 @@ export const metadata: Metadata = {
   description:
     "52 repositori @devarent, 26 teknologi data, Terraform, AWS EC2, Docker, Kubernetes, CI/CD, dan roadmap DevOps dalam satu dashboard.",
   applicationName: "Devarent Control Center",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Devarent",
+    statusBarStyle: "black-translucent",
+  },
+  keywords: [
+    "Devarent",
+    "cloud data control center",
+    "DevOps portfolio",
+    "Next.js dashboard",
+    "Tailwind CSS",
+    "shadcn ui",
+    "Radix UI",
+    "Terraform",
+    "AWS EC2",
+    "Docker",
+    "Kubernetes",
+    "Databricks",
+    "data engineering",
+  ],
+  authors: [{ name: "Arya Fatthurahman", url: "https://github.com/devarent" }],
+  creator: "Arya Fatthurahman",
+  publisher: "Devarent",
+  category: "technology",
+  alternates: { canonical: "/" },
+  formatDetection: { telephone: false, address: false, email: false },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     title: "Devarent — Cloud & Data Control Center",
     description:
@@ -29,8 +68,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" className="dark">
+    <html lang="id" className="dark" suppressHydrationWarning>
       <body className="antialiased">
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`try{var t=localStorage.getItem('atlas-theme');if(t==='light'){document.documentElement.classList.remove('dark')}}catch(e){}`}
+        </Script>
         <div className="atmosphere" aria-hidden />
         <div className="relative z-10">{children}</div>
       </body>
