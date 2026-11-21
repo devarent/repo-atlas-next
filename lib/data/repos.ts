@@ -3,7 +3,7 @@ export type Track = {
   key: string; flag: string; country: string; word: string;
   theme: string; color: string; note: string;
 };
-export type AtlasRepo = {
+export type RepoItem = {
   r: string; c: string; t: string; l: string; y: string;
   k: string[]; d: string; p: string | null;
 };
@@ -92,7 +92,7 @@ export const tracks: Track[] = [
   }
 ];
 
-export const repos: AtlasRepo[] = [
+export const repos: RepoItem[] = [
   {
     "r": "quantum-hybrid-diffusion-models",
     "c": "Aurora Diffusion",

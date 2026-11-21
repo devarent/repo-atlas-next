@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="t d">
   <title id="t">Devarent — Cloud, Data &amp; AI Engineering</title>
-  <desc id="d">Banner with AF monogram, DEVARENT wordmark, and tagline on a dark technical grid.</desc>
+  <desc id="d">Next-gen tech banner with D monogram, DEVARENT wordmark and cloud/data tagline.</desc>
   <defs>
     <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#22D3EE"/>
@@ -11,42 +11,36 @@
       <stop offset="0" stop-color="#22D3EE"/>
       <stop offset="1" stop-color="#A855F7" stop-opacity="0"/>
     </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="50%" r="60%">
-      <stop offset="0" stop-color="#4F46E5" stop-opacity="0.30"/>
+    <radialGradient id="glow" cx="60%" cy="45%" r="62%">
+      <stop offset="0" stop-color="#4F46E5" stop-opacity="0.32"/>
       <stop offset="1" stop-color="#4F46E5" stop-opacity="0"/>
     </radialGradient>
     <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M40 0H0V40" fill="none" stroke="#93A4C8" stroke-opacity="0.09" stroke-width="1"/>
+      <path d="M40 0H0V40" fill="none" stroke="#8AA0C8" stroke-opacity="0.08" stroke-width="1"/>
     </pattern>
   </defs>
 
-  <rect width="1280" height="640" fill="#080C18"/>
+  <rect width="1280" height="640" fill="#070B14"/>
   <rect width="1280" height="640" fill="url(#grid)"/>
-  <ellipse cx="880" cy="300" rx="520" ry="360" fill="url(#glow)"/>
+  <ellipse cx="860" cy="300" rx="520" ry="360" fill="url(#glow)"/>
 
   <!-- monogram -->
   <g transform="translate(120 176)">
-    <rect width="288" height="288" rx="64" fill="#0D1426" stroke="#22304D"/>
+    <rect width="288" height="288" rx="64" fill="#0B1120" stroke="#22304D"/>
     <g transform="translate(24 24) scale(0.46875)">
-      <circle cx="256" cy="256" r="200" fill="none" stroke="url(#mark)" stroke-opacity="0.5" stroke-width="3"/>
-      <circle cx="256" cy="256" r="166" fill="none" stroke="url(#mark)" stroke-opacity="0.28" stroke-width="1.5"/>
-      <g fill="none" stroke="url(#mark)" stroke-width="8" stroke-linejoin="round" stroke-linecap="round">
-        <path d="M112 398 L176 398 L252 146 L212 134 Z"/>
-        <path d="M212 134 L252 146 L328 398 L264 398 Z"/>
-        <rect x="168" y="302" width="112" height="27" rx="4"/>
-        <rect x="352" y="146" width="31" height="252" rx="5"/>
-        <rect x="352" y="146" width="94" height="31" rx="5"/>
-        <rect x="352" y="250" width="74" height="27" rx="5"/>
-      </g>
+      <circle cx="256" cy="256" r="212" fill="none" stroke="url(#mark)" stroke-opacity="0.45" stroke-width="3"/>
+      <circle cx="256" cy="44" r="7" fill="#22D3EE"/>
+      <path d="M150 120 H268 C348 120 392 180 392 256 C392 332 348 392 268 392 H150 Z" fill="url(#mark)"/>
+      <path d="M204 178 H266 C310 178 334 213 334 256 C334 299 310 334 266 334 H204 Z" fill="#0B1120"/>
+      <path d="M150 120 H268 C348 120 392 180 392 256" fill="none" stroke="#A5F3FC" stroke-opacity="0.75" stroke-width="4"/>
     </g>
   </g>
 
   <!-- wordmark -->
-  <text x="468" y="292" fill="#F2F6FF" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="92" font-weight="800" letter-spacing="6">DEVARENT</text>
+  <text x="468" y="292" fill="#F2F6FF" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="92" font-weight="800" letter-spacing="5">DEVARENT</text>
   <text x="472" y="348" fill="url(#mark)" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="7">CLOUD · DATA · AI ENGINEERING</text>
   <rect x="470" y="382" width="480" height="3" rx="2" fill="url(#rule)"/>
-
-  <text x="470" y="440" fill="#94A3C4" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="21">Terraform · AWS · Kubernetes · Databricks · 26 databases · 52 open labs</text>
+  <text x="470" y="440" fill="#94A3C4" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="21">Terraform · AWS · Kubernetes · Databricks · 26 databases · 52 labs</text>
 
   <g fill="#22D3EE">
     <circle cx="1140" cy="120" r="5"/><circle cx="1180" cy="120" r="5"/><circle cx="1220" cy="120" r="5"/>

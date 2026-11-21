@@ -19,14 +19,14 @@ export type Track = {
   key: string; flag: string; country: string; word: string;
   theme: string; color: string; note: string;
 };
-export type AtlasRepo = {
+export type RepoItem = {
   r: string; c: string; t: string; l: string; y: string;
   k: string[]; d: string; p: string | null;
 };
 
 export const tracks: Track[] = ${JSON.stringify(tracks, null, 2)};
 
-export const repos: AtlasRepo[] = ${JSON.stringify(repos, null, 2)};
+export const repos: RepoItem[] = ${JSON.stringify(repos, null, 2)};
 
 export const trackByKey: Record<string, Track> = Object.fromEntries(
   tracks.map((t) => [t.key, t]),

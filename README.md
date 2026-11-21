@@ -2,7 +2,7 @@
   <img src="assets/brand-banner-v2.svg" alt="Devarent — Cloud, Data & AI Engineering" width="100%" />
 </div>
 
-# Repo Atlas — Cloud & Data Control Center
+# Devarent — Cloud & Data Control Center
 
 Versi Next.js dari katalog repo. Menggantikan halaman HTML statis di `repo-atlas/`.
 
@@ -63,7 +63,7 @@ Artefak deploy: `Dockerfile` (multi-stage standalone), `docker-compose.yml`, `.g
 
 | Tab | Isi |
 | --- | --- |
-| **Atlas Repo** | 52 repo @devarent, 9 konstelasi negara, filter trek/jenis, pencarian, dialog detail. |
+| **Repos** | 52 repo @devarent, 9 konstelasi negara, filter trek/jenis, pencarian, dialog detail. |
 | **26 Database** | 7 Relasional/distributed SQL · 8 Cloud analytics · 4 NoSQL/search · 3 Vector/graph · 4 Streaming/time-series. |
 | **Cloud & Runbook** | 10 stack (WSL2, EC2, Terraform, Docker, K8s/Helm, Actions, Databricks, Keras, Route53/AC/CloudFront, Prometheus/Grafana). Panel koneksi EC2 + 6 runbook dengan tombol salin. |
 | **Roadmap & Role** | 9 fase belajar + 4 peran dengan repo pembuktian. |

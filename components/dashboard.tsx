@@ -14,13 +14,13 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { repos, tracks, trackByKey, type AtlasRepo } from "@/lib/data/repos";
+import { repos, tracks, trackByKey, type RepoItem } from "@/lib/data/repos";
 import { databases, dbCategories, type DatabaseTech } from "@/lib/data/databases";
 import { references, roadmap, roles, runbooks, stack } from "@/lib/data/cloud";
 
 const kinds = Array.from(new Set(repos.map((r) => r.y)));
 const navItems = [
-  { value: "atlas", label: "Atlas Repo", icon: Layers3, hint: `${repos.length} repo` },
+  { value: "atlas", label: "Repos", icon: Layers3, hint: `${repos.length} repo` },
   { value: "data", label: "26 Database", icon: Database, hint: "data stack" },
   { value: "cloud", label: "Cloud & Runbook", icon: Cloud, hint: "AWS / K8s" },
   { value: "roadmap", label: "Roadmap & Role", icon: Waypoints, hint: "9 fase" },
@@ -50,7 +50,7 @@ function SectionTitle({ icon: Icon, title, subtitle }: { icon: React.ElementType
   );
 }
 
-function RepoCard({ repo, onOpen }: { repo: AtlasRepo; onOpen: (r: AtlasRepo) => void }) {
+function RepoCard({ repo, onOpen }: { repo: RepoItem; onOpen: (r: RepoItem) => void }) {
   const t = trackByKey[repo.t];
   return (
     <Card className="group relative overflow-hidden transition-all hover:-translate-y-1" style={{ "--tc": t.color } as React.CSSProperties}>
@@ -108,7 +108,7 @@ export default function Dashboard() {
   const [dbQuery, setDbQuery] = React.useState("");
   const [dbCategory, setDbCategory] = React.useState("Semua");
   const [open, setOpen] = React.useState(false);
-  const [detail, setDetail] = React.useState<AtlasRepo | null>(null);
+  const [detail, setDetail] = React.useState<RepoItem | null>(null);
   const [mobileNav, setMobileNav] = React.useState(false);
   const [dark, setDark] = React.useState(true);
   const [toast, setToast] = React.useState<string | null>(null);
@@ -180,9 +180,9 @@ export default function Dashboard() {
     <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r surface lg:flex">
       <div className="flex items-center gap-3 border-b px-5 py-5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand-logo.svg" alt="Logo AF" className="h-10 w-10 rounded-lg" />
+        <img src="/brand-logo.svg" alt="Logo Devarent" className="h-10 w-10 rounded-lg" />
         <div>
-          <div className="text-sm font-extrabold tracking-tight">Repo Atlas</div>
+          <div className="text-sm font-extrabold tracking-tight">Devarent</div>
           <div className="text-[10px] uppercase tracking-widest text-muted">Control Center</div>
         </div>
       </div>
@@ -244,8 +244,8 @@ export default function Dashboard() {
 
         <main className="mx-auto max-w-[1500px] px-4 pb-24 pt-8 sm:px-8">
           <header className="mb-8">
-            <h1 className="text-5xl font-black tracking-tight sm:text-6xl">Repo <span className="bg-gradient-to-r from-[#a78bfa] via-[#22d3ee] to-[#34d399] bg-clip-text text-transparent">Atlas</span></h1>
-            <p className="mt-4 max-w-3xl text-muted sm:text-lg">52 repository @devarent dalam 9 konstelasi negara, terhubung ke 26 teknologi data, Terraform, AWS EC2, Docker, Kubernetes, dan CI/CD.</p>
+            <h1 className="text-5xl font-black tracking-tight sm:text-6xl">Devarent <span className="bg-gradient-to-r from-[#22d3ee] via-[#6366f1] to-[#a855f7] bg-clip-text text-transparent">Control Center</span></h1>
+            <p className="mt-4 max-w-3xl text-muted sm:text-lg">Cloud &amp; data command center: 52 repository @devarent, 26 teknologi data, Terraform, AWS EC2, Docker, Kubernetes, dan CI/CD dalam satu dashboard.</p>
             <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               <Stat value="52" label="Repository" /><Stat value="9" label="Konstelasi" /><Stat value="26" label="Teknologi data" />
               <Stat value="10" label="Stack cloud" /><Stat value="6" label="Runbook" /><Stat value="19" label="Referensi" />
@@ -257,7 +257,7 @@ export default function Dashboard() {
               {navItems.map((n) => <TabsTrigger key={n.value} value={n.value}>{n.label}</TabsTrigger>)}
             </TabsList>
 
-            {/* ATLAS */}
+            {/* REPOS */}
             <TabsContent value="atlas">
               <SectionTitle icon={Layers3} title="Peta 52 repository" subtitle="Julukan unik per negara · grid atau tabel sortable · klik baris untuk detail." />
               <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
@@ -460,7 +460,7 @@ export default function Dashboard() {
           </Tabs>
 
           <footer className="mt-16 flex flex-wrap items-center justify-between gap-3 border-t pt-6 text-xs text-muted">
-            <span>Repo Atlas · 52 repo @devarent · nama lama: aryafatthurahman4-collab</span>
+            <span>Devarent · 52 repo @devarent · nama lama: aryafatthurahman4-collab</span>
             <a href="https://github.com/devarent" target="_blank" rel="noopener" className="hover:text-foreground">github.com/devarent ↗</a>
           </footer>
         </main>

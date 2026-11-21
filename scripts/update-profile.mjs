@@ -17,9 +17,9 @@ if (!get.ok) throw new Error(`Gagal membaca README: ${get.status} ${await get.te
 const file = await get.json();
 let content = Buffer.from(file.content, "base64").toString("utf8");
 
-const marker = "Repo Atlas — Cloud & Data Control Center";
+const marker = "Devarent — Cloud & Data Control Center";
 if (content.includes(marker)) {
-  console.log("README profil sudah memuat blok Repo Atlas. Tidak ada perubahan.");
+  console.log("README profil sudah memuat blok Devarent. Tidak ada perubahan.");
   process.exit(0);
 }
 
@@ -30,7 +30,7 @@ const put = await fetch(`https://api.github.com/repos/${repo}/contents/README.md
   method: "PUT",
   headers,
   body: JSON.stringify({
-    message: "docs: tambahkan Repo Atlas Cloud & Data Control Center",
+    message: "docs: tambahkan Devarent Cloud & Data Control Center",
     content: Buffer.from(content, "utf8").toString("base64"),
     sha: file.sha,
   }),
