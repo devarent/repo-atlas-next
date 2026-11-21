@@ -26,7 +26,8 @@ Mark v5 **Astral Grain**: monogram **D** geometris dengan gradient pink → viol
 
 - **Next.js 16** (App Router) + **React 19** + **TypeScript**
 - **Tailwind CSS v4** (`@tailwindcss/postcss`)
-- **shadcn-style UI** di atas **Radix UI**: Tabs, Dialog, Tooltip, Separator, Slot
+- **shadcn/ui structure** (`components.json`) di atas **Radix UI**: `button`, `card`, `badge`, `input`, `tabs`, `dialog`, `tooltip`, `separator`, `skeleton`, `scroll-area`
+- Komponen dipecah per file di `components/ui/` + barrel `components/ui/index.ts`, hooks di `hooks/`
 - `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`
 
 ## Jalankan
@@ -38,8 +39,9 @@ npm run dev          # http://localhost:3100
 npm run build        # verifikasi produksi
 ```
 
-## UX (shadcn-style)
+## UX (shadcn/ui + Radix)
 
+- **Struktur shadcn resmi**: `components.json`, alias `@/components/ui`, `@/lib/utils`, dan `@/hooks`; komponen disusun per file dan diekspor lewat barrel.
 - **Design system Astral Grain**: canvas deep-space, aurora mesh animasi, film grain overlay, glass surfaces, gradient hairline, dan gradient text.
 - **Button ala Arc (uiarc)**: varian primary / secondary / outline / ghost / subtle / danger, ukuran sm–lg, press scale `0.97`, focus ring, dan state `loading`.
 - Sidebar navigasi tetap + topbar dengan pencarian global (`Ctrl+K`), theme toggle dark/light, dan tautan GitHub.

@@ -14,6 +14,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { useCountUp } from "@/hooks/use-count-up";
 import { repos, tracks, trackByKey, type RepoItem } from "@/lib/data/repos";
 import { databases, dbCategories, type DatabaseTech } from "@/lib/data/databases";
 import { references, roadmap, roles, runbooks, stack } from "@/lib/data/cloud";
@@ -30,56 +31,6 @@ const navItems = [
 const statAccents = ["#a78bfa", "#4de1ff", "#ff8ac4", "#ffb86b", "#34d399", "#818cf8"];
 
 type SortKey = "c" | "r" | "t" | "y" | "l";
-
-function useCountUp(target: number, duration = 1200) {
-  const [value, setValue] = React.useState(target);
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setValue(target);
-      return;
-    }
-
-    let raf = 0;
-    let watchdog = 0;
-    let started = false;
-
-    const run = () => {
-      if (started || document.visibilityState !== "visible") return;
-      started = true;
-      let frames = 0;
-
-      // If the compositor never delivers a frame (occluded window, power save),
-      // snap to the real value instead of leaving a zero on screen.
-      watchdog = window.setTimeout(() => {
-        if (frames === 0) setValue(target);
-      }, 350);
-
-      const start = performance.now();
-      const tick = (now: number) => {
-        frames += 1;
-        const progress = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setValue(Math.round(target * eased));
-        if (progress < 1) raf = requestAnimationFrame(tick);
-      };
-      setValue(0);
-      raf = requestAnimationFrame(tick);
-    };
-
-    run();
-    const onVisible = () => run();
-    document.addEventListener("visibilitychange", onVisible);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.clearTimeout(watchdog);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
-  }, [target, duration]);
-
-  return value;
-}
 
 function Stat({ value, label, index = 0 }: { value: string; label: string; index?: number }) {
   const accent = statAccents[index % statAccents.length];
