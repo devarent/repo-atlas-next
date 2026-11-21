@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import {
-  ArrowUpDown, BookOpen, Check, ChevronRight, Cloud, Command, Copy,
+  ArrowUpDown, ArrowUpRight, BookOpen, Check, ChevronRight, Cloud, Command, Copy,
   Database, ExternalLink, GitBranch, Github, Globe2, LayoutGrid, List,
-  Menu, Moon, Network, Rocket, Search, Server, ShieldCheck, Sun,
+  Menu, Moon, Network, Rocket, Search, Server, ShieldCheck, Sparkles, Sun,
   Terminal, Waypoints, X, Layers3,
 } from "lucide-react";
 import {
@@ -20,32 +20,60 @@ import { references, roadmap, roles, runbooks, stack } from "@/lib/data/cloud";
 
 const kinds = Array.from(new Set(repos.map((r) => r.y)));
 const navItems = [
-  { value: "atlas", label: "Repos", icon: Layers3, hint: `${repos.length} repo` },
-  { value: "data", label: "26 Database", icon: Database, hint: "data stack" },
-  { value: "cloud", label: "Cloud & Runbook", icon: Cloud, hint: "AWS / K8s" },
-  { value: "roadmap", label: "Roadmap & Role", icon: Waypoints, hint: "9 fase" },
-  { value: "refs", label: "Referensi", icon: BookOpen, hint: `${references.length} link` },
+  { value: "atlas", label: "Repos", icon: Layers3, hint: `${repos.length}` },
+  { value: "data", label: "Databases", icon: Database, hint: "26" },
+  { value: "cloud", label: "Cloud & Runbook", icon: Cloud, hint: "AWS" },
+  { value: "roadmap", label: "Roadmap", icon: Waypoints, hint: "9" },
+  { value: "refs", label: "Referensi", icon: BookOpen, hint: `${references.length}` },
 ];
+
+const statAccents = ["#a78bfa", "#4de1ff", "#ff8ac4", "#ffb86b", "#34d399", "#818cf8"];
 
 type SortKey = "c" | "r" | "t" | "y" | "l";
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({ value, label, index = 0 }: { value: string; label: string; index?: number }) {
+  const accent = statAccents[index % statAccents.length];
   return (
-    <div className="surface rounded-xl border px-4 py-3">
-      <div className="text-xl font-extrabold tracking-tight">{value}</div>
-      <div className="text-[11px] uppercase tracking-widest text-muted">{label}</div>
+    <div className="glass group relative overflow-hidden rounded-2xl px-4 py-3.5">
+      <div
+        aria-hidden
+        className="absolute -right-6 -top-8 h-20 w-20 rounded-full opacity-25 blur-2xl transition-opacity duration-300 group-hover:opacity-50"
+        style={{ background: accent }}
+      />
+      <div className="relative flex items-baseline gap-2">
+        <span className="text-2xl font-black tracking-tight" style={{ color: accent }}>
+          {value}
+        </span>
+        <span className="h-1 w-1 rounded-full" style={{ background: accent }} />
+      </div>
+      <div className="relative mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted">{label}</div>
     </div>
   );
 }
 
-function SectionTitle({ icon: Icon, title, subtitle }: { icon: React.ElementType; title: string; subtitle: string }) {
+function SectionTitle({
+  icon: Icon,
+  title,
+  subtitle,
+  right,
+}: {
+  icon: React.ElementType;
+  title: string;
+  subtitle: string;
+  right?: React.ReactNode;
+}) {
   return (
-    <div className="mb-5 flex items-start gap-3">
-      <div className="rounded-lg border border-primary/30 bg-primary/10 p-2 text-[color:var(--primary)]"><Icon className="h-5 w-5" /></div>
-      <div>
-        <h2 className="text-lg font-bold tracking-tight">{title}</h2>
-        <p className="text-sm text-muted">{subtitle}</p>
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+      <div className="flex items-start gap-3">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--border-strong)] bg-[var(--primary-soft)] text-[var(--primary-text)] shadow-[inset_0_1px_0_var(--glass-line)]">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold tracking-tight">{title}</h2>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted">{subtitle}</p>
+        </div>
       </div>
+      {right}
     </div>
   );
 }
@@ -53,24 +81,60 @@ function SectionTitle({ icon: Icon, title, subtitle }: { icon: React.ElementType
 function RepoCard({ repo, onOpen }: { repo: RepoItem; onOpen: (r: RepoItem) => void }) {
   const t = trackByKey[repo.t];
   return (
-    <Card className="group relative overflow-hidden transition-all hover:-translate-y-1" style={{ "--tc": t.color } as React.CSSProperties}>
-      <div className="absolute inset-x-0 top-0 h-0.5" style={{ background: `linear-gradient(90deg, ${t.color}, transparent 85%)` }} />
-      <CardHeader className="gap-2">
+    <Card
+      className="group relative overflow-hidden"
+      style={{ "--tc": t.color } as React.CSSProperties}
+    >
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px opacity-80"
+        style={{ background: `linear-gradient(90deg, transparent, ${t.color}, transparent)` }}
+      />
+      <div
+        aria-hidden
+        className="absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-30"
+        style={{ background: t.color }}
+      />
+      <CardHeader className="relative gap-2">
         <div className="flex items-start gap-3">
-          <span className="text-2xl leading-none">{t.flag}</span>
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] bg-[var(--hover-1)] text-xl">
+            {t.flag}
+          </span>
           <div className="min-w-0 flex-1">
             <CardTitle className="truncate">{repo.c}</CardTitle>
-            <button onClick={() => onOpen(repo)} className="font-mono text-[11px] text-muted hover:text-[color:var(--tc)]">{repo.r}</button>
+            <button
+              onClick={() => onOpen(repo)}
+              className="mt-0.5 block max-w-full truncate font-mono text-[11px] text-muted transition hover:text-[color:var(--tc)]"
+            >
+              {repo.r}
+            </button>
           </div>
-          <Badge variant="outline" className="shrink-0" style={{ borderColor: t.color, color: t.color }}>{repo.y}</Badge>
+          <Badge variant="outline" className="shrink-0" style={{ borderColor: `${t.color}66`, color: t.color }}>
+            {repo.y}
+          </Badge>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col gap-3">
-        <p className="text-sm leading-relaxed text-muted">{repo.d}</p>
-        <div className="flex flex-wrap gap-1.5">{repo.k.map((k) => <Badge key={k} variant="outline" className="text-[10px]">#{k}</Badge>)}</div>
-        <div className="mt-auto flex items-center justify-between border-t pt-3">
-          <span className="flex items-center gap-2 text-[11px] text-muted"><span className="h-2 w-2 rounded-full" style={{ background: t.color, boxShadow: `0 0 8px ${t.color}` }} />{repo.l}</span>
-          <Button size="sm" variant="ghost" onClick={() => onOpen(repo)}>Detail <ChevronRight className="h-3.5 w-3.5" /></Button>
+      <CardContent className="relative flex flex-1 flex-col gap-3">
+        <p className="line-clamp-3 text-sm leading-relaxed text-muted">{repo.d}</p>
+        <div className="flex flex-wrap gap-1.5">
+          {repo.k.slice(0, 4).map((k) => (
+            <Badge key={k} variant="outline" className="text-[10px] font-medium">
+              #{k}
+            </Badge>
+          ))}
+        </div>
+        <div className="mt-auto flex items-center justify-between border-t border-[var(--border)] pt-3">
+          <span className="flex items-center gap-2 text-[11px] text-muted">
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: t.color, boxShadow: `0 0 10px ${t.color}` }}
+            />
+            {repo.l}
+          </span>
+          <Button size="sm" variant="ghost" className="group/btn gap-1 pr-1" onClick={() => onOpen(repo)}>
+            Detail
+            <ChevronRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -79,19 +143,50 @@ function RepoCard({ repo, onOpen }: { repo: RepoItem; onOpen: (r: RepoItem) => v
 
 function DbCard({ db }: { db: DatabaseTech }) {
   return (
-    <Card className="group relative overflow-hidden transition-all hover:-translate-y-1" style={{ "--tc": db.color } as React.CSSProperties}>
-      <div className="absolute inset-x-0 top-0 h-0.5" style={{ background: `linear-gradient(90deg, ${db.color}, transparent 85%)` }} />
-      <CardHeader className="gap-2">
-        <div className="flex items-center gap-3"><span className="text-2xl">{db.glyph}</span><CardTitle>{db.name}</CardTitle></div>
-        <Badge variant="outline" className="w-fit text-[10px]">{db.category}</Badge>
+    <Card className="group relative overflow-hidden" style={{ "--tc": db.color } as React.CSSProperties}>
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px opacity-80"
+        style={{ background: `linear-gradient(90deg, transparent, ${db.color}, transparent)` }}
+      />
+      <div
+        aria-hidden
+        className="absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-25"
+        style={{ background: db.color }}
+      />
+      <CardHeader className="relative gap-2">
+        <div className="flex items-center gap-3">
+          <span className="grid h-9 w-9 place-items-center rounded-xl border border-[var(--border)] bg-[var(--hover-1)] text-lg">
+            {db.glyph}
+          </span>
+          <CardTitle>{db.name}</CardTitle>
+        </div>
+        <Badge variant="outline" className="w-fit text-[10px]">
+          {db.category}
+        </Badge>
       </CardHeader>
-      <CardContent className="space-y-3 text-sm">
-        <p className="font-medium">{db.tagline}</p>
-        <p className="text-muted">{db.use}</p>
-        <div className="code-bg rounded-lg border px-3 py-2 font-mono text-[11px] text-muted">docker: {db.image}</div>
+      <CardContent className="relative space-y-3 text-sm">
+        <p className="font-medium leading-snug">{db.tagline}</p>
+        <p className="line-clamp-2 text-xs leading-relaxed text-muted">{db.use}</p>
+        <div className="code-bg overflow-hidden rounded-lg border px-3 py-2 font-mono text-[10px]">
+          <span className="text-white/40">docker: </span>
+          <span className="truncate">{db.image}</span>
+        </div>
         <div className="flex flex-wrap gap-2">
-          <a href={db.url} target="_blank" rel="noopener"><Button size="sm" variant="outline"><BookOpen className="h-3.5 w-3.5" />Dokumentasi</Button></a>
-          {db.lab && <a href={`https://github.com/devarent/${db.lab}`} target="_blank" rel="noopener"><Button size="sm" variant="subtle"><GitBranch className="h-3.5 w-3.5" />Lab</Button></a>}
+          <a href={db.url} target="_blank" rel="noopener">
+            <Button size="sm" variant="secondary">
+              <BookOpen className="h-3.5 w-3.5" />
+              Docs
+            </Button>
+          </a>
+          {db.lab && (
+            <a href={`https://github.com/devarent/${db.lab}`} target="_blank" rel="noopener">
+              <Button size="sm" variant="ghost">
+                <GitBranch className="h-3.5 w-3.5" />
+                Lab
+              </Button>
+            </a>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -121,26 +216,46 @@ export default function Dashboard() {
     setTimeout(() => setToast(null), 2200);
   }, []);
 
-  const copy = React.useCallback(async (value: string, label: string) => {
-    try { await navigator.clipboard.writeText(value); notify(`${label} disalin`); }
-    catch { notify("Clipboard tidak tersedia"); }
-  }, [notify]);
+  const copy = React.useCallback(
+    async (value: string, label: string) => {
+      try {
+        await navigator.clipboard.writeText(value);
+        notify(`${label} disalin`);
+      } catch {
+        notify("Clipboard tidak tersedia");
+      }
+    },
+    [notify],
+  );
 
   React.useEffect(() => {
     const saved = localStorage.getItem("atlas-ec2");
     if (saved) {
-      try { const v = JSON.parse(saved); setIp(v.ip || ""); setRegion(v.region || "us-east-1"); setUser(v.user || "ubuntu"); } catch { /* abaikan */ }
+      try {
+        const v = JSON.parse(saved);
+        setIp(v.ip || "");
+        setRegion(v.region || "us-east-1");
+        setUser(v.user || "ubuntu");
+      } catch {
+        /* abaikan */
+      }
     }
     const savedDark = localStorage.getItem("atlas-theme");
     if (savedDark === "light") setDark(false);
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setOpen(true); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setOpen(true);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  React.useEffect(() => { localStorage.setItem("atlas-ec2", JSON.stringify({ ip, region, user })); }, [ip, region, user]);
+  React.useEffect(() => {
+    localStorage.setItem("atlas-ec2", JSON.stringify({ ip, region, user }));
+  }, [ip, region, user]);
+
   React.useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
     localStorage.setItem("atlas-theme", dark ? "dark" : "light");
@@ -160,46 +275,98 @@ export default function Dashboard() {
 
   const filteredDbs = React.useMemo(() => {
     const q = dbQuery.trim().toLowerCase();
-    return databases.filter((d) =>
-      (dbCategory === "Semua" || d.category === dbCategory) &&
-      (!q || [d.name, d.tagline, d.use, d.category, d.image].join(" ").toLowerCase().includes(q)),
+    return databases.filter(
+      (d) =>
+        (dbCategory === "Semua" || d.category === dbCategory) &&
+        (!q || [d.name, d.tagline, d.use, d.category, d.image].join(" ").toLowerCase().includes(q)),
     );
   }, [dbQuery, dbCategory]);
 
-  const commandResults = React.useMemo(() => [
-    ...repos.map((r) => ({ label: r.c, meta: `repo · ${r.r}`, url: `https://github.com/devarent/${r.r}` })),
-    ...databases.map((d) => ({ label: d.name, meta: `database · ${d.category}`, url: d.url })),
-    ...references.map((r) => ({ label: r.title, meta: `referensi · ${r.group}`, url: r.url })),
-  ].filter((r) => r.label.toLowerCase().includes(query.toLowerCase())).slice(0, 8), [query]);
+  const commandResults = React.useMemo(
+    () =>
+      [
+        ...repos.map((r) => ({ label: r.c, meta: `repo · ${r.r}`, url: `https://github.com/devarent/${r.r}` })),
+        ...databases.map((d) => ({ label: d.name, meta: `database · ${d.category}`, url: d.url })),
+        ...references.map((r) => ({ label: r.title, meta: `referensi · ${r.group}`, url: r.url })),
+      ]
+        .filter((r) => r.label.toLowerCase().includes(query.toLowerCase()))
+        .slice(0, 8),
+    [query],
+  );
 
   const sshCommand = `ssh -i ~/.ssh/id_rsa ${user}@${ip || "<PUBLIC_IP>"}`;
   const localUrl = "http://localhost:3100";
   const publicUrl = ip ? `http://${ip}` : "http://<PUBLIC_IP>";
 
   const Sidebar = (
-    <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r surface lg:flex">
-      <div className="flex items-center gap-3 border-b px-5 py-5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand-logo.svg" alt="Logo Devarent" className="h-10 w-10 rounded-lg" />
+    <aside className="fixed inset-y-0 left-0 z-50 hidden w-[268px] flex-col border-r border-[var(--border)] bg-[var(--sidebar)] backdrop-blur-2xl lg:flex">
+      <div className="flex items-center gap-3 px-5 py-5">
+        <div className="relative">
+          <div aria-hidden className="absolute inset-0 rounded-2xl bg-[var(--primary)]/50 blur-xl" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand-logo.svg"
+            alt="Logo Devarent"
+            className="relative h-11 w-11 rounded-2xl ring-1 ring-white/10"
+          />
+        </div>
         <div>
           <div className="text-sm font-extrabold tracking-tight">Devarent</div>
-          <div className="text-[10px] uppercase tracking-widest text-muted">Control Center</div>
+          <div className="text-[10px] uppercase tracking-[0.22em] text-muted">Control Center</div>
         </div>
       </div>
-      <nav className="flex-1 space-y-1 p-3">
-        {navItems.map((n) => (
-          <button key={n.value} onClick={() => setTab(n.value)}
-            className={cn("flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition",
-              tab === n.value ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-muted hover:bg-primary/10 hover:text-foreground")}>
-            <n.icon className="h-4 w-4" />
-            <span className="flex-1 text-left">{n.label}</span>
-            <span className={cn("text-[10px]", tab === n.value ? "text-white/70" : "text-muted")}>{n.hint}</span>
-          </button>
-        ))}
+
+      <div className="mx-5 hairline" />
+
+      <nav className="flex-1 space-y-1.5 p-3">
+        {navItems.map((n) => {
+          const active = tab === n.value;
+          return (
+            <button
+              key={n.value}
+              onClick={() => setTab(n.value)}
+              className={cn(
+                "group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200",
+                active
+                  ? "bg-[linear-gradient(135deg,#8b5cf6_0%,#6366f1_52%,#22d3ee_100%)] text-white shadow-[0_12px_30px_-16px_rgba(99,102,241,0.95)]"
+                  : "text-muted hover:bg-[var(--hover-1)] hover:text-foreground",
+              )}
+            >
+              {active && (
+                <span aria-hidden className="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-white/80" />
+              )}
+              <n.icon className="h-4 w-4" />
+              <span className="flex-1 text-left">{n.label}</span>
+              <span
+                className={cn(
+                  "rounded-md px-1.5 py-0.5 text-[10px] font-bold",
+                  active ? "bg-white/15 text-white/85" : "bg-[var(--hover-1)] text-muted",
+                )}
+              >
+                {n.hint}
+              </span>
+            </button>
+          );
+        })}
       </nav>
-      <div className="space-y-2 border-t p-4 text-[11px] text-muted">
-        <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Sesi aktif · 2026</div>
-        <a href="https://github.com/devarent" target="_blank" rel="noopener" className="flex items-center gap-2 hover:text-foreground"><Github className="h-3.5 w-3.5" /> github.com/devarent</a>
+
+      <div className="p-3">
+        <div className="glass rounded-2xl p-3.5 text-[11px]">
+          <div className="flex items-center gap-2 font-semibold text-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-dot" />
+            Sesi aktif · 2026
+          </div>
+          <a
+            href="https://github.com/devarent"
+            target="_blank"
+            rel="noopener"
+            className="mt-2 flex items-center gap-2 text-muted transition hover:text-foreground"
+          >
+            <Github className="h-3.5 w-3.5" />
+            github.com/devarent
+            <ArrowUpRight className="ml-auto h-3 w-3" />
+          </a>
+        </div>
       </div>
     </aside>
   );
@@ -207,103 +374,321 @@ export default function Dashboard() {
   return (
     <TooltipProvider>
       {Sidebar}
-      <div className="lg:pl-64">
+      <div className="lg:pl-[268px]">
         {/* TOPBAR */}
-        <div className="surface sticky top-0 z-40 flex items-center gap-3 border-b px-4 py-3 backdrop-blur sm:px-8">
-          <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileNav(!mobileNav)}>{mobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</Button>
-          <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[color:var(--primary)]">Cloud & Data Control Center · 2026</div>
-            <div className="truncate text-xs text-muted">Built in public by Arya Fatthurahman</div>
-          </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild><Button variant="outline" size="sm"><Command className="h-4 w-4" /><span className="hidden sm:inline">Cari cepat</span><kbd className="rounded border px-1 text-[10px]">⌘K</kbd></Button></DialogTrigger>
-            <DialogContent>
-              <DialogTitle>Pencarian global</DialogTitle>
-              <DialogDescription>Repo, teknologi database, atau referensi.</DialogDescription>
-              <Input autoFocus className="my-4" placeholder="Ketik nama…" value={query} onChange={(e) => setQuery(e.target.value)} />
-              <div className="scrollbar-thin max-h-80 space-y-1 overflow-y-auto">
-                {commandResults.map((r) => (
-                  <a key={r.url + r.label} href={r.url} target="_blank" rel="noopener" onClick={() => setOpen(false)} className="flex items-center justify-between rounded-lg border border-transparent px-3 py-2 hover:bg-primary/10">
-                    <span className="text-sm font-medium">{r.label}</span>
-                    <span className="text-[11px] text-muted">{r.meta}</span>
-                  </a>
-                ))}
-                {!commandResults.length && <p className="py-6 text-center text-sm text-muted">Tidak ada hasil.</p>}
+        <div className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--topbar)] backdrop-blur-2xl">
+          <div className="mx-auto flex max-w-[1500px] items-center gap-3 px-4 py-3 sm:px-8">
+            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileNav(!mobileNav)}>
+              {mobileNav ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+            <div className="min-w-0 flex-1">
+              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--primary-text)]">
+                Cloud &amp; Data Control Center · 2026
               </div>
-            </DialogContent>
-          </Dialog>
-          <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" onClick={() => setDark(!dark)}>{dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}</Button></TooltipTrigger><TooltipContent>Ganti tema</TooltipContent></Tooltip>
-          <a href="https://github.com/devarent" target="_blank" rel="noopener"><Button variant="ghost" size="icon"><Github className="h-4 w-4" /></Button></a>
+              <div className="truncate text-xs text-muted">Built in public by Arya Fatthurahman</div>
+            </div>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button variant="secondary" size="sm">
+                  <Command className="h-4 w-4" />
+                  <span className="hidden sm:inline">Cari cepat</span>
+                  <kbd className="ml-1 rounded border border-[var(--border)] bg-[var(--hover-1)] px-1.5 py-0.5 text-[10px] font-semibold text-muted">
+                    ⌘K
+                  </kbd>
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogTitle className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-[var(--primary-text)]" />
+                  Pencarian global
+                </DialogTitle>
+                <DialogDescription>Repo, teknologi database, atau referensi.</DialogDescription>
+                <Input
+                  autoFocus
+                  className="my-4"
+                  placeholder="Ketik nama…"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+                <div className="scrollbar-thin max-h-80 space-y-1 overflow-y-auto">
+                  {commandResults.map((r) => (
+                    <a
+                      key={r.url + r.label}
+                      href={r.url}
+                      target="_blank"
+                      rel="noopener"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center justify-between rounded-xl border border-transparent px-3 py-2.5 transition hover:border-[var(--border)] hover:bg-[var(--hover-1)]"
+                    >
+                      <span className="text-sm font-medium">{r.label}</span>
+                      <span className="text-[11px] text-muted">{r.meta}</span>
+                    </a>
+                  ))}
+                  {!commandResults.length && <p className="py-6 text-center text-sm text-muted">Tidak ada hasil.</p>}
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" onClick={() => setDark(!dark)}>
+                  {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Ganti tema</TooltipContent>
+            </Tooltip>
+            <a href="https://github.com/devarent" target="_blank" rel="noopener">
+              <Button variant="ghost" size="icon">
+                <Github className="h-4 w-4" />
+              </Button>
+            </a>
+          </div>
+          <div className="aurora-line h-px w-full opacity-60" />
         </div>
 
         {mobileNav && (
-          <nav className="grid grid-cols-2 gap-2 border-b surface p-3 lg:hidden">
-            {navItems.map((n) => <button key={n.value} onClick={() => { setTab(n.value); setMobileNav(false); }} className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"><n.icon className="h-4 w-4" />{n.label}</button>)}
+          <nav className="grid grid-cols-2 gap-2 border-b border-[var(--border)] bg-[var(--sidebar)] p-3 backdrop-blur-xl lg:hidden">
+            {navItems.map((n) => (
+              <button
+                key={n.value}
+                onClick={() => {
+                  setTab(n.value);
+                  setMobileNav(false);
+                }}
+                className={cn(
+                  "flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition",
+                  tab === n.value
+                    ? "border-transparent bg-[linear-gradient(135deg,#8b5cf6,#6366f1_55%,#22d3ee)] text-white"
+                    : "border-[var(--border)] text-muted",
+                )}
+              >
+                <n.icon className="h-4 w-4" />
+                {n.label}
+              </button>
+            ))}
           </nav>
         )}
 
-        <main className="mx-auto max-w-[1500px] px-4 pb-24 pt-8 sm:px-8">
-          <header className="mb-8">
-            <h1 className="text-5xl font-black tracking-tight sm:text-6xl">Devarent <span className="bg-gradient-to-r from-[#22d3ee] via-[#6366f1] to-[#a855f7] bg-clip-text text-transparent">Control Center</span></h1>
-            <p className="mt-4 max-w-3xl text-muted sm:text-lg">Cloud &amp; data command center: 52 repository @devarent, 26 teknologi data, Terraform, AWS EC2, Docker, Kubernetes, dan CI/CD dalam satu dashboard.</p>
-            <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-              <Stat value="52" label="Repository" /><Stat value="9" label="Konstelasi" /><Stat value="26" label="Teknologi data" />
-              <Stat value="10" label="Stack cloud" /><Stat value="6" label="Runbook" /><Stat value="19" label="Referensi" />
+        <main className="mx-auto max-w-[1500px] px-4 pb-24 pt-6 sm:px-8 sm:pt-8">
+          {/* HERO */}
+          <header className="glass relative mb-8 overflow-hidden rounded-[28px] p-6 sm:p-9">
+            <div aria-hidden className="hero-aurora" />
+            <div aria-hidden className="hero-grid" />
+
+            <div aria-hidden className="pointer-events-none absolute -right-28 -top-36 hidden h-[480px] w-[480px] lg:block">
+              <div className="orbit orbit-slow absolute inset-12" />
+              <div className="orbit orbit-slower absolute inset-28" />
+              <div className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent)] shadow-[0_0_34px_10px_var(--accent)]" />
+            </div>
+
+            <div className="relative">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="eyebrow">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  Live · 2026 portfolio
+                </span>
+                <span className="text-[11px] font-medium text-muted">Next.js 16 · Tailwind v4 · Radix</span>
+              </div>
+
+              <h1 className="text-balance mt-5 text-5xl font-black leading-[0.98] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
+                Devarent <span className="text-aurora">Control Center</span>
+              </h1>
+
+              <p className="text-balance mt-5 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
+                52 repository, 26 teknologi data, dan seluruh toolchain cloud — Terraform, AWS EC2, Docker,
+                Kubernetes, Databricks, CI/CD — dalam satu dashboard yang bisa dibuka dari localhost maupun IP publik.
+              </p>
+
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <Button size="lg" onClick={() => setTab("atlas")}>
+                  Jelajahi 52 repo
+                  <ArrowUpRight className="h-4 w-4" />
+                </Button>
+                <a href="https://github.com/devarent" target="_blank" rel="noopener">
+                  <Button size="lg" variant="secondary">
+                    <Github className="h-4 w-4" />
+                    GitHub profile
+                  </Button>
+                </a>
+                <div className="ml-auto hidden items-center gap-2 text-[11px] text-muted xl:flex">
+                  <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
+                  Grainient gradients · Arc buttons
+                </div>
+              </div>
+
+              <div className="mt-8 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+                <Stat value="52" label="Repository" index={0} />
+                <Stat value="9" label="Konstelasi" index={1} />
+                <Stat value="26" label="Teknologi data" index={2} />
+                <Stat value="10" label="Stack cloud" index={3} />
+                <Stat value="6" label="Runbook" index={4} />
+                <Stat value="19" label="Referensi" index={5} />
+              </div>
             </div>
           </header>
 
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="lg:hidden">
-              {navItems.map((n) => <TabsTrigger key={n.value} value={n.value}>{n.label}</TabsTrigger>)}
+              {navItems.map((n) => (
+                <TabsTrigger key={n.value} value={n.value}>
+                  {n.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             {/* REPOS */}
             <TabsContent value="atlas">
-              <SectionTitle icon={Layers3} title="Peta 52 repository" subtitle="Julukan unik per negara · grid atau tabel sortable · klik baris untuk detail." />
-              <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
-                <button onClick={() => setTrack(null)} className={cn("rounded-xl border p-3 text-left text-sm transition", !track ? "border-primary bg-primary/10" : "hover:bg-primary/5")}>
-                  <span className="font-bold">Semua trek</span><span className="mt-1 block text-xs text-muted">{repos.length} repo</span>
+              <SectionTitle
+                icon={Layers3}
+                title="Peta 52 repository"
+                subtitle="Sembilan konstelasi bertema negara. Filter trek, cari topik, lalu klik kartu untuk detail."
+                right={
+                  <div className="flex items-center gap-2 text-xs text-muted">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                    {filteredRepos.length} / {repos.length} tampil
+                  </div>
+                }
+              />
+
+              <div className="mb-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
+                <button
+                  onClick={() => setTrack(null)}
+                  className={cn(
+                    "group rounded-2xl border p-3 text-left text-sm transition-all duration-200",
+                    !track
+                      ? "border-[color-mix(in_srgb,var(--primary)_60%,transparent)] bg-[var(--primary-soft)] shadow-[0_12px_30px_-22px_var(--primary)]"
+                      : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--border-strong)] hover:bg-[var(--hover-1)]",
+                  )}
+                >
+                  <span className="flex items-center gap-2 font-bold">
+                    <Layers3 className="h-4 w-4 text-[var(--primary-text)]" />
+                    Semua trek
+                  </span>
+                  <span className="mt-1 block text-xs text-muted">{repos.length} repo</span>
                 </button>
-                {tracks.map((t) => (
-                  <Tooltip key={t.key}>
-                    <TooltipTrigger asChild>
-                      <button onClick={() => setTrack(t.key === track ? null : t.key)} className={cn("rounded-xl border p-3 text-left text-sm transition", track === t.key && "bg-primary/10")} style={track === t.key ? { borderColor: t.color } : undefined}>
-                        <span className="font-bold">{t.flag} {t.word}</span>
-                        <span className="mt-1 block text-xs text-muted">{t.country} · {repos.filter((r) => r.t === t.key).length}</span>
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>{t.note}</TooltipContent>
-                  </Tooltip>
-                ))}
+                {tracks.map((t) => {
+                  const active = track === t.key;
+                  return (
+                    <Tooltip key={t.key}>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setTrack(active ? null : t.key)}
+                          className={cn(
+                            "group relative overflow-hidden rounded-2xl border p-3 text-left text-sm transition-all duration-200",
+                            active
+                              ? "bg-[var(--hover-1)]"
+                              : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--border-strong)] hover:bg-[var(--hover-1)]",
+                          )}
+                          style={
+                            active
+                              ? {
+                                  borderColor: `${t.color}80`,
+                                  boxShadow: `0 12px 30px -22px ${t.color}`,
+                                  background: `linear-gradient(150deg, ${t.color}1f, transparent 70%)`,
+                                }
+                              : undefined
+                          }
+                        >
+                          <span className="flex items-center gap-2 font-bold">
+                            <span className="text-base leading-none">{t.flag}</span>
+                            {t.word}
+                          </span>
+                          <span className="mt-1 block text-xs text-muted">
+                            {t.country} · {repos.filter((r) => r.t === t.key).length}
+                          </span>
+                          <span
+                            aria-hidden
+                            className="absolute inset-x-0 bottom-0 h-px opacity-0 transition-opacity group-hover:opacity-100"
+                            style={{ background: `linear-gradient(90deg, transparent, ${t.color}, transparent)` }}
+                          />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t.note}</TooltipContent>
+                    </Tooltip>
+                  );
+                })}
               </div>
-              <div className="mb-4 flex flex-wrap gap-2">
+
+              <div className="mb-4 flex flex-wrap items-center gap-2.5">
                 <div className="relative min-w-[240px] flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-                  <Input className="pl-9" placeholder="Cari repo, julukan, topik, bahasa…" value={query} onChange={(e) => setQuery(e.target.value)} />
+                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                  <Input
+                    className="pl-10"
+                    placeholder="Cari repo, julukan, topik, bahasa…"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
                 </div>
-                <div className="flex rounded-lg border p-0.5">
-                  <Button size="sm" variant={view === "grid" ? "default" : "ghost"} onClick={() => setView("grid")}><LayoutGrid className="h-4 w-4" /></Button>
-                  <Button size="sm" variant={view === "table" ? "default" : "ghost"} onClick={() => setView("table")}><List className="h-4 w-4" /></Button>
+                <div className="glass flex rounded-xl p-1">
+                  <Button
+                    size="sm"
+                    variant={view === "grid" ? "default" : "ghost"}
+                    onClick={() => setView("grid")}
+                    aria-label="Tampilan grid"
+                  >
+                    <LayoutGrid className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={view === "table" ? "default" : "ghost"}
+                    onClick={() => setView("table")}
+                    aria-label="Tampilan tabel"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                {["Semua", ...kinds].map((k) => <Button key={k} size="sm" variant={k === kind ? "default" : "outline"} onClick={() => setKind(k)}>{k}</Button>)}
-                <span className="ml-auto text-xs text-muted">Menampilkan <b className="text-foreground">{filteredRepos.length}</b> / {repos.length}</span>
+
+              <div className="mb-5 flex flex-wrap items-center gap-1.5">
+                {["Semua", ...kinds].map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => setKind(k)}
+                    className={cn(
+                      "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97]",
+                      k === kind
+                        ? "border-transparent bg-[linear-gradient(135deg,#8b5cf6,#6366f1_55%,#22d3ee)] text-white shadow-[0_8px_22px_-12px_rgba(99,102,241,0.9)]"
+                        : "border-[var(--border)] text-muted hover:border-[var(--border-strong)] hover:bg-[var(--hover-1)] hover:text-foreground",
+                    )}
+                  >
+                    {k}
+                  </button>
+                ))}
               </div>
 
               {view === "grid" ? (
-                <div className="animate-atlas-fade-up grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {filteredRepos.map((r) => <RepoCard key={r.r} repo={r} onOpen={setDetail} />)}
+                <div className="animate-fade-up grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {filteredRepos.map((r) => (
+                    <RepoCard key={r.r} repo={r} onOpen={setDetail} />
+                  ))}
                 </div>
               ) : (
                 <Card className="overflow-hidden">
                   <div className="scrollbar-thin overflow-x-auto">
                     <table className="w-full text-left text-sm">
-                      <thead className="code-bg text-xs uppercase tracking-wider text-muted">
+                      <thead className="bg-[var(--hover-1)] text-[10px] uppercase tracking-[0.16em] text-muted">
                         <tr>
-                          {([["c", "Julukan"], ["r", "Repository"], ["t", "Trek"], ["y", "Jenis"], ["l", "Bahasa"]] as [SortKey, string][]).map(([key, label]) => (
+                          {(
+                            [
+                              ["c", "Julukan"],
+                              ["r", "Repository"],
+                              ["t", "Trek"],
+                              ["y", "Jenis"],
+                              ["l", "Bahasa"],
+                            ] as [SortKey, string][]
+                          ).map(([key, label]) => (
                             <th key={key} className="whitespace-nowrap px-4 py-3 font-semibold">
-                              <button className="flex items-center gap-1 hover:text-foreground" onClick={() => setSort(key)}>{label}<ArrowUpDown className="h-3 w-3" /></button>
+                              <button
+                                className="flex items-center gap-1 transition hover:text-foreground"
+                                onClick={() => setSort(key)}
+                              >
+                                {label}
+                                <ArrowUpDown className="h-3 w-3" />
+                              </button>
                             </th>
                           ))}
                         </tr>
@@ -312,10 +697,20 @@ export default function Dashboard() {
                         {filteredRepos.map((r) => {
                           const t = trackByKey[r.t];
                           return (
-                            <tr key={r.r} onClick={() => setDetail(r)} className="cursor-pointer border-t transition hover:bg-primary/5">
-                              <td className="whitespace-nowrap px-4 py-3 font-semibold">{t.flag} {r.c}</td>
+                            <tr
+                              key={r.r}
+                              onClick={() => setDetail(r)}
+                              className="cursor-pointer border-t border-[var(--border)] transition hover:bg-[var(--hover-1)]"
+                            >
+                              <td className="whitespace-nowrap px-4 py-3 font-semibold">
+                                {t.flag} {r.c}
+                              </td>
                               <td className="px-4 py-3 font-mono text-xs text-muted">devarent/{r.r}</td>
-                              <td className="px-4 py-3"><Badge variant="outline" style={{ color: t.color, borderColor: t.color }}>{t.word}</Badge></td>
+                              <td className="px-4 py-3">
+                                <Badge variant="outline" style={{ color: t.color, borderColor: `${t.color}66` }}>
+                                  {t.word}
+                                </Badge>
+                              </td>
                               <td className="px-4 py-3 text-muted">{r.y}</td>
                               <td className="px-4 py-3 text-muted">{r.l}</td>
                             </tr>
@@ -330,24 +725,56 @@ export default function Dashboard() {
 
             {/* DATA */}
             <TabsContent value="data">
-              <SectionTitle icon={Database} title="26 teknologi data" subtitle="Keseluruhan daftar: SQL & distributed, cloud analytics, NoSQL, vector/graph, streaming." />
-              <div className="mb-6 flex flex-wrap gap-2">
+              <SectionTitle
+                icon={Database}
+                title="26 teknologi data"
+                subtitle="SQL & distributed, cloud analytics, NoSQL, vector/graph, streaming & time-series."
+                right={<Badge variant="accent">{filteredDbs.length} aktif</Badge>}
+              />
+
+              <div className="mb-6 flex flex-wrap items-center gap-2.5">
                 <div className="relative min-w-[240px] flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-                  <Input className="pl-9" placeholder="Cari teknologi, use case, docker image…" value={dbQuery} onChange={(e) => setDbQuery(e.target.value)} />
+                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                  <Input
+                    className="pl-10"
+                    placeholder="Cari teknologi, use case, docker image…"
+                    value={dbQuery}
+                    onChange={(e) => setDbQuery(e.target.value)}
+                  />
                 </div>
-                {["Semua", ...dbCategories].map((c) => <Button key={c} size="sm" variant={c === dbCategory ? "default" : "outline"} onClick={() => setDbCategory(c)}>{c}</Button>)}
+                <div className="flex flex-wrap gap-1.5">
+                  {["Semua", ...dbCategories].map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setDbCategory(c)}
+                      className={cn(
+                        "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-[0.97]",
+                        c === dbCategory
+                          ? "border-transparent bg-[linear-gradient(135deg,#8b5cf6,#6366f1_55%,#22d3ee)] text-white shadow-[0_8px_22px_-12px_rgba(99,102,241,0.9)]"
+                          : "border-[var(--border)] text-muted hover:border-[var(--border-strong)] hover:bg-[var(--hover-1)] hover:text-foreground",
+                      )}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
               </div>
+
               {dbCategories.map((cat) => {
                 const list = filteredDbs.filter((d) => d.category === cat);
                 if (!list.length) return null;
                 return (
                   <section key={cat} className="mb-9">
                     <div className="mb-3 flex items-center gap-3">
-                      <h3 className="text-sm font-bold uppercase tracking-widest text-[color:var(--primary)]">{cat}</h3>
-                      <Separator className="flex-1" /><Badge variant="outline">{list.length}</Badge>
+                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--primary-text)]">{cat}</h3>
+                      <div className="hairline flex-1" />
+                      <Badge variant="outline">{list.length}</Badge>
                     </div>
-                    <div className="animate-atlas-fade-up grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{list.map((d) => <DbCard key={d.name} db={d} />)}</div>
+                    <div className="animate-fade-up grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                      {list.map((d) => (
+                        <DbCard key={d.name} db={d} />
+                      ))}
+                    </div>
                   </section>
                 );
               })}
@@ -356,19 +783,47 @@ export default function Dashboard() {
 
             {/* CLOUD */}
             <TabsContent value="cloud">
-              <SectionTitle icon={Cloud} title="Akses localhost & IP publik" subtitle="Aplikasi bisa diakses dari laptop (localhost) atau dari EC2 setelah Terraform membuat Elastic IP." />
+              <SectionTitle
+                icon={Cloud}
+                title="Akses localhost & IP publik"
+                subtitle="Jalankan dari laptop, atau dari EC2 setelah Terraform membuat Elastic IP."
+              />
+
               <div className="mb-6 grid gap-4 sm:grid-cols-2">
                 <Card>
-                  <CardHeader><CardTitle className="flex items-center gap-2 text-sm"><Server className="h-4 w-4" />Lokal / localhost</CardTitle><CardDescription>Aktif di laptop lewat Laragon atau next dev.</CardDescription></CardHeader>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-sm">
+                      <Server className="h-4 w-4 text-[var(--accent)]" />
+                      Lokal / localhost
+                    </CardTitle>
+                    <CardDescription>Aktif di laptop lewat Laragon atau next dev.</CardDescription>
+                  </CardHeader>
                   <CardContent className="space-y-2">
-                    <div className="code-bg flex items-center gap-2 rounded-lg border p-3"><code className="flex-1 font-mono text-xs">{localUrl}</code><Button size="sm" variant="outline" onClick={() => copy(localUrl, "URL lokal")}><Copy className="h-3.5 w-3.5" /></Button></div>
+                    <div className="code-bg flex items-center gap-2 rounded-xl border p-3">
+                      <code className="flex-1 font-mono text-xs">{localUrl}</code>
+                      <Button size="sm" variant="secondary" onClick={() => copy(localUrl, "URL lokal")}>
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                     <code className="text-[11px] text-muted">npm run dev -- --webpack</code>
                   </CardContent>
                 </Card>
-                <Card className="border-primary/40">
-                  <CardHeader><CardTitle className="flex items-center gap-2 text-sm"><Globe2 className="h-4 w-4" />Publik / Elastic IP</CardTitle><CardDescription>Isi IP asli dari terraform output public_ip.</CardDescription></CardHeader>
+
+                <Card className="gradient-border">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-sm">
+                      <Globe2 className="h-4 w-4 text-[var(--primary-text)]" />
+                      Publik / Elastic IP
+                    </CardTitle>
+                    <CardDescription>Isi IP asli dari terraform output public_ip.</CardDescription>
+                  </CardHeader>
                   <CardContent className="space-y-2">
-                    <div className="code-bg flex items-center gap-2 rounded-lg border p-3"><code className="flex-1 font-mono text-xs">{publicUrl}</code><Button size="sm" variant="outline" onClick={() => copy(publicUrl, "URL publik")}><Copy className="h-3.5 w-3.5" /></Button></div>
+                    <div className="code-bg flex items-center gap-2 rounded-xl border p-3">
+                      <code className="flex-1 font-mono text-xs">{publicUrl}</code>
+                      <Button size="sm" variant="secondary" onClick={() => copy(publicUrl, "URL publik")}>
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                     <div className="grid grid-cols-3 gap-2">
                       <Input value={ip} onChange={(e) => setIp(e.target.value)} placeholder="Public IP" className="text-xs" />
                       <Input value={region} onChange={(e) => setRegion(e.target.value)} placeholder="region" className="text-xs" />
@@ -378,16 +833,30 @@ export default function Dashboard() {
                 </Card>
               </div>
 
-              <div className="mb-8 flex flex-wrap gap-2 rounded-xl border p-3">
-                <Badge variant="outline"><Network className="mr-1 h-3 w-3" />SSH</Badge>
-                <code className="code-bg flex-1 rounded px-2 py-1 font-mono text-[11px]">{sshCommand}</code>
-                <Button size="sm" variant="subtle" onClick={() => copy(sshCommand, "Perintah SSH")}><Copy className="mr-1 h-3.5 w-3.5" />Salin SSH</Button>
+              <div className="glass mb-8 flex flex-wrap items-center gap-2 rounded-2xl p-3">
+                <Badge variant="outline">
+                  <Network className="mr-1 h-3 w-3" />
+                  SSH
+                </Badge>
+                <code className="code-bg flex-1 rounded-lg px-3 py-1.5 font-mono text-[11px]">{sshCommand}</code>
+                <Button size="sm" variant="subtle" onClick={() => copy(sshCommand, "Perintah SSH")}>
+                  <Copy className="mr-1 h-3.5 w-3.5" />
+                  Salin SSH
+                </Button>
               </div>
 
               <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 {stack.map((s) => (
                   <Card key={s.name} className="h-full">
-                    <CardHeader><div className="flex items-center gap-3"><span className="text-2xl">{s.glyph}</span><CardTitle className="text-sm">{s.name}</CardTitle></div><Badge variant="outline" className="w-fit text-[10px]" style={{ color: s.color, borderColor: s.color }}>{s.role}</Badge></CardHeader>
+                    <CardHeader>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{s.glyph}</span>
+                        <CardTitle className="text-sm">{s.name}</CardTitle>
+                      </div>
+                      <Badge variant="outline" className="w-fit text-[10px]" style={{ color: s.color, borderColor: `${s.color}66` }}>
+                        {s.role}
+                      </Badge>
+                    </CardHeader>
                     <CardContent className="text-xs leading-relaxed text-muted">{s.detail}</CardContent>
                   </Card>
                 ))}
@@ -397,13 +866,25 @@ export default function Dashboard() {
                 {runbooks.map((rb) => (
                   <Card key={rb.id} className="overflow-hidden">
                     <CardHeader className="flex flex-row items-start justify-between gap-3">
-                      <div><CardTitle className="text-sm">{rb.title}</CardTitle><CardDescription className="mt-1">{rb.summary}</CardDescription></div>
-                      <Badge variant="default" className="shrink-0">{rb.env}</Badge>
+                      <div>
+                        <CardTitle className="text-sm">{rb.title}</CardTitle>
+                        <CardDescription className="mt-1">{rb.summary}</CardDescription>
+                      </div>
+                      <Badge variant="default" className="shrink-0">
+                        {rb.env}
+                      </Badge>
                     </CardHeader>
                     <CardContent>
-                      <div className="code-bg rounded-lg border p-4">
-                        <pre className="scrollbar-thin overflow-x-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed">{rb.code}</pre>
-                        <div className="mt-3 flex justify-end"><Button size="sm" variant="outline" onClick={() => copy(rb.code, `Runbook ${rb.id}`)}><Copy className="mr-1 h-3.5 w-3.5" />Salin</Button></div>
+                      <div className="code-bg rounded-xl border p-4">
+                        <pre className="scrollbar-thin overflow-x-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed">
+                          {rb.code}
+                        </pre>
+                        <div className="mt-3 flex justify-end">
+                          <Button size="sm" variant="secondary" onClick={() => copy(rb.code, `Runbook ${rb.id}`)}>
+                            <Copy className="mr-1 h-3.5 w-3.5" />
+                            Salin
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -411,29 +892,68 @@ export default function Dashboard() {
               </div>
 
               <Card className="mt-6 border-amber-500/40">
-                <CardHeader><CardTitle className="flex items-center gap-2 text-sm"><ShieldCheck className="h-4 w-4 text-amber-400" />Kredensial & biaya</CardTitle></CardHeader>
-                <CardContent className="text-sm text-muted">Gunakan <code>aws login</code> atau IAM Access Key asli. Jangan commit kredensial. Jalankan <code>terraform destroy</code> setelah selesai agar EC2/EIP tidak ditagih. Saat ini kredensial AWS di environment masih invalid, sehingga IP publik belum dibuat otomatis.</CardContent>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <ShieldCheck className="h-4 w-4 text-amber-400" />
+                    Kredensial &amp; biaya
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm leading-relaxed text-muted">
+                  Gunakan <code className="code-bg rounded px-1.5 py-0.5 text-xs">aws login</code> atau IAM Access Key asli.
+                  Jangan commit kredensial. Jalankan <code className="code-bg rounded px-1.5 py-0.5 text-xs">terraform destroy</code>{" "}
+                  setelah selesai agar EC2/EIP tidak ditagih. Saat ini kredensial AWS di environment masih invalid, sehingga IP
+                  publik belum dibuat otomatis.
+                </CardContent>
               </Card>
             </TabsContent>
 
             {/* ROADMAP */}
             <TabsContent value="roadmap">
-              <SectionTitle icon={Waypoints} title="Roadmap & role fit" subtitle="Urutan belajar dan bukti repository untuk setiap peran." />
+              <SectionTitle
+                icon={Waypoints}
+                title="Roadmap & role fit"
+                subtitle="Urutan belajar dan bukti repository untuk setiap peran."
+              />
+
               <div className="mb-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {roadmap.map((p) => (
-                  <Card key={p.phase} className="relative overflow-hidden">
-                    <div className="absolute right-4 top-3 text-4xl font-black text-white/5">{p.phase}</div>
-                    <CardHeader><Badge variant="default" className="w-fit">{p.badge}</Badge><CardTitle>{p.name}</CardTitle></CardHeader>
-                    <CardContent className="text-sm text-muted">{p.topics}</CardContent>
+                  <Card key={p.phase} className="group relative overflow-hidden">
+                    <div
+                      aria-hidden
+                      className="absolute -right-2 -top-4 text-6xl font-black tracking-tighter text-[var(--primary)] opacity-[0.08] transition-opacity group-hover:opacity-[0.16]"
+                    >
+                      {p.phase}
+                    </div>
+                    <CardHeader>
+                      <Badge variant="default" className="w-fit">
+                        {p.badge}
+                      </Badge>
+                      <CardTitle>{p.name}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm leading-relaxed text-muted">{p.topics}</CardContent>
                   </Card>
                 ))}
               </div>
-              <h3 className="mb-4 text-lg font-bold">Peran → bukti repo</h3>
+
+              <h3 className="mb-4 text-lg font-bold tracking-tight">Peran → bukti repo</h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 {roles.map((r) => (
                   <Card key={r.title}>
-                    <CardHeader><CardTitle className="flex items-center gap-2 text-sm"><Rocket className="h-4 w-4 text-[color:var(--primary)]" />{r.title}</CardTitle></CardHeader>
-                    <CardContent className="space-y-3"><p className="text-sm text-muted">{r.fit}</p><a href={`https://github.com/devarent/${r.repo}`} target="_blank" rel="noopener"><Button size="sm" variant="outline"><ExternalLink className="mr-1 h-3.5 w-3.5" />{r.repo}</Button></a></CardContent>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-sm">
+                        <Rocket className="h-4 w-4 text-[var(--primary-text)]" />
+                        {r.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <p className="text-sm leading-relaxed text-muted">{r.fit}</p>
+                      <a href={`https://github.com/devarent/${r.repo}`} target="_blank" rel="noopener">
+                        <Button size="sm" variant="secondary">
+                          <ExternalLink className="mr-1 h-3.5 w-3.5" />
+                          {r.repo}
+                        </Button>
+                      </a>
+                    </CardContent>
                   </Card>
                 ))}
               </div>
@@ -441,48 +961,103 @@ export default function Dashboard() {
 
             {/* REFERENCES */}
             <TabsContent value="refs">
-              <SectionTitle icon={BookOpen} title="Pustaka referensi" subtitle="Tautan resmi yang dipakai menyusun UI, pipeline, dan lab data." />
+              <SectionTitle
+                icon={BookOpen}
+                title="Pustaka referensi"
+                subtitle="Tautan resmi yang dipakai menyusun UI, pipeline, dan lab data."
+              />
               {Array.from(new Set(references.map((r) => r.group))).map((group) => (
                 <section key={group} className="mb-8">
-                  <h3 className="mb-3 text-sm font-bold uppercase tracking-widest text-[color:var(--primary)]">{group}</h3>
+                  <div className="mb-3 flex items-center gap-3">
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--primary-text)]">{group}</h3>
+                    <div className="hairline flex-1" />
+                  </div>
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {references.filter((r) => r.group === group).map((r) => (
-                      <a key={r.url} href={r.url} target="_blank" rel="noopener" className="group">
-                        <Card className="h-full transition group-hover:border-primary/60">
-                          <CardHeader><CardTitle className="flex items-start justify-between gap-2 text-sm">{r.title}<ExternalLink className="h-4 w-4 shrink-0 text-muted group-hover:text-[color:var(--primary)]" /></CardTitle><CardDescription>{r.note}</CardDescription></CardHeader>
-                        </Card>
-                      </a>
-                    ))}
+                    {references
+                      .filter((r) => r.group === group)
+                      .map((r) => (
+                        <a key={r.url} href={r.url} target="_blank" rel="noopener" className="group block">
+                          <Card className="h-full">
+                            <CardHeader>
+                              <CardTitle className="flex items-start justify-between gap-2 text-sm">
+                                {r.title}
+                                <ExternalLink className="h-4 w-4 shrink-0 text-muted transition group-hover:text-[var(--primary-text)]" />
+                              </CardTitle>
+                              <CardDescription>{r.note}</CardDescription>
+                            </CardHeader>
+                          </Card>
+                        </a>
+                      ))}
                   </div>
                 </section>
               ))}
             </TabsContent>
           </Tabs>
 
-          <footer className="mt-16 flex flex-wrap items-center justify-between gap-3 border-t pt-6 text-xs text-muted">
-            <span>Devarent · 52 repo @devarent · nama lama: aryafatthurahman4-collab</span>
-            <a href="https://github.com/devarent" target="_blank" rel="noopener" className="hover:text-foreground">github.com/devarent ↗</a>
+          <footer className="mt-16">
+            <div className="hairline mb-6" />
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted">
+              <span className="flex items-center gap-2">
+                <span className="grid h-6 w-6 place-items-center rounded-md bg-[linear-gradient(135deg,#8b5cf6,#6366f1_55%,#22d3ee)] text-[10px] font-black text-white">
+                  D
+                </span>
+                Devarent · 52 repo @devarent · nama lama: aryafatthurahman4-collab
+              </span>
+              <a href="https://github.com/devarent" target="_blank" rel="noopener" className="transition hover:text-foreground">
+                github.com/devarent ↗
+              </a>
+            </div>
           </footer>
         </main>
       </div>
 
-      {toast && <div className="fixed bottom-5 right-5 z-[100] flex items-center gap-2 rounded-lg border bg-[var(--card)] px-4 py-3 text-sm shadow-2xl"><Check className="h-4 w-4 text-emerald-500" />{toast}</div>}
+      {toast && (
+        <div className="glass-strong fixed bottom-5 right-5 z-[100] flex items-center gap-2 rounded-2xl px-4 py-3 text-sm shadow-2xl">
+          <span className="grid h-5 w-5 place-items-center rounded-full bg-emerald-500/20 text-emerald-400">
+            <Check className="h-3.5 w-3.5" />
+          </span>
+          {toast}
+        </div>
+      )}
 
       <Dialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}>
         <DialogContent>
           {detail && (
             <>
               <div className="mb-2 flex items-center gap-3">
-                <span className="text-3xl">{trackByKey[detail.t].flag}</span>
-                <div><DialogTitle>{detail.c}</DialogTitle><DialogDescription>{trackByKey[detail.t].country} · {trackByKey[detail.t].theme}</DialogDescription></div>
+                <span className="grid h-12 w-12 place-items-center rounded-2xl border border-[var(--border)] bg-[var(--hover-1)] text-3xl">
+                  {trackByKey[detail.t].flag}
+                </span>
+                <div>
+                  <DialogTitle>{detail.c}</DialogTitle>
+                  <DialogDescription>
+                    {trackByKey[detail.t].country} · {trackByKey[detail.t].theme}
+                  </DialogDescription>
+                </div>
               </div>
               <Separator className="my-4" />
               <p className="text-sm leading-relaxed">{detail.d}</p>
-              <p className="code-bg mt-3 rounded-lg border p-3 text-xs text-muted">{detail.k.map((k) => `#${k}`).join("  ")}</p>
+              <p className="code-bg mt-3 rounded-xl border p-3 text-xs">{detail.k.map((k) => `#${k}`).join("  ")}</p>
               <div className="mt-5 flex flex-wrap gap-2">
-                <a href={`https://github.com/devarent/${detail.r}`} target="_blank" rel="noopener"><Button><ExternalLink className="mr-1 h-4 w-4" />Buka repository</Button></a>
-                <Button variant="outline" onClick={() => copy(`git clone https://github.com/devarent/${detail.r}.git`, "Perintah clone")}><Terminal className="mr-1 h-4 w-4" />Salin clone</Button>
-                {detail.p && <Badge variant="outline"><GitBranch className="mr-1 h-3 w-3" />{detail.p}</Badge>}
+                <a href={`https://github.com/devarent/${detail.r}`} target="_blank" rel="noopener">
+                  <Button>
+                    <ExternalLink className="mr-1 h-4 w-4" />
+                    Buka repository
+                  </Button>
+                </a>
+                <Button
+                  variant="secondary"
+                  onClick={() => copy(`git clone https://github.com/devarent/${detail.r}.git`, "Perintah clone")}
+                >
+                  <Terminal className="mr-1 h-4 w-4" />
+                  Salin clone
+                </Button>
+                {detail.p && (
+                  <Badge variant="outline">
+                    <GitBranch className="mr-1 h-3 w-3" />
+                    {detail.p}
+                  </Badge>
+                )}
               </div>
             </>
           )}

@@ -8,14 +8,17 @@ Versi Next.js dari katalog repo. Menggantikan halaman HTML statis di `repo-atlas
 
 ## Identitas visual
 
-Logo baru memakai monogram **AF** geometris dengan gradasi cyan → indigo → violet di atas latar navy. Aset:
+Mark v5 **Astral Grain**: monogram **D** geometris dengan gradient pink → violet → biru → cyan, orbit ring, aksen sirkuit, dan film grain di atas deep space `#06070E`. Arah visualnya mengikuti koleksi **Grainient** (mesh gradient + grain) dan motion **Arc / uiarc** (press scale, label morph, loading state).
 
 | File | Dipakai untuk |
 | --- | --- |
-| `assets/avatar-512.png` | **GitHub profile avatar** — unggah lewat Settings → Profile → Avatar |
+| `assets/avatar-1024.png` | **GitHub profile avatar** — unggah lewat Settings → Profile → Avatar |
 | `assets/social-preview.png` | **Social preview** repo — unggah lewat Settings → Social preview |
 | `assets/brand-logo.svg` | Logo vektor di dashboard dan README |
 | `assets/brand-banner.svg` | Banner lebar untuk README |
+| `assets/logo-pulse.gif` | Logo animasi untuk hero profil |
+
+> GitHub tidak menyediakan API publik untuk mengganti avatar/social preview, jadi dua unggahan di atas harus lewat UI Settings. Semua file sudah tersedia di repo ini dan di `devarent/devarent/assets/`.
 
 > GitHub tidak menyediakan API publik untuk mengganti avatar/social preview, jadi dua unggahan di atas harus lewat UI Settings. Semua file sudah tersedia di repo ini dan di `devarent/devarent/assets/`.
 
@@ -37,6 +40,8 @@ npm run build        # verifikasi produksi
 
 ## UX (shadcn-style)
 
+- **Design system Astral Grain**: canvas deep-space, aurora mesh animasi, film grain overlay, glass surfaces, gradient hairline, dan gradient text.
+- **Button ala Arc (uiarc)**: varian primary / secondary / outline / ghost / subtle / danger, ukuran sm–lg, press scale `0.97`, focus ring, dan state `loading`.
 - Sidebar navigasi tetap + topbar dengan pencarian global (`Ctrl+K`), theme toggle dark/light, dan tautan GitHub.
 - Daftar repo bisa dua mode: **grid kartu** atau **tabel sortable** (Julukan, Repository, Trek, Jenis, Bahasa).
 - Toast konfirmasi untuk setiap aksi salin (URL, perintah SSH, clone, runbook).

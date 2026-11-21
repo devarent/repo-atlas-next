@@ -10,7 +10,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="id" className="dark">
-      <body className="bg-grid antialiased">{children}</body>
+      <body className="antialiased">
+        <div className="atmosphere" aria-hidden />
+        <div className="relative z-10">{children}</div>
+      </body>
     </html>
   );
 }

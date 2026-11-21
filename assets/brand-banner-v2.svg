@@ -1,51 +1,114 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="t d">
   <title id="t">Devarent — Cloud, Data &amp; AI Engineering</title>
-  <desc id="d">Next-gen tech banner with D monogram, DEVARENT wordmark and cloud/data tagline.</desc>
+  <desc id="d">Astral-grain banner: aurora mesh of violet, cyan, pink and amber over deep space, with the D monogram, DEVARENT wordmark and engineering tagline.</desc>
   <defs>
-    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#22D3EE"/>
-      <stop offset="0.5" stop-color="#6366F1"/>
-      <stop offset="1" stop-color="#A855F7"/>
+    <linearGradient id="mark" x1="0.04" y1="0.08" x2="0.96" y2="0.94">
+      <stop offset="0" stop-color="#FF9BD2"/>
+      <stop offset="0.32" stop-color="#8B5CF6"/>
+      <stop offset="0.66" stop-color="#5B8CFF"/>
+      <stop offset="1" stop-color="#4DE1FF"/>
+    </linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.72" stop-color="#EDE9FF"/>
+      <stop offset="1" stop-color="#C4B5FD"/>
     </linearGradient>
     <linearGradient id="rule" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#22D3EE"/>
-      <stop offset="1" stop-color="#A855F7" stop-opacity="0"/>
+      <stop offset="0" stop-color="#FF9BD2"/>
+      <stop offset="0.4" stop-color="#8B5CF6"/>
+      <stop offset="0.75" stop-color="#4DE1FF"/>
+      <stop offset="1" stop-color="#4DE1FF" stop-opacity="0"/>
     </linearGradient>
-    <radialGradient id="glow" cx="60%" cy="45%" r="62%">
-      <stop offset="0" stop-color="#4F46E5" stop-opacity="0.32"/>
-      <stop offset="1" stop-color="#4F46E5" stop-opacity="0"/>
+    <radialGradient id="auroraA" cx="14%" cy="8%" r="60%">
+      <stop offset="0" stop-color="#7C5CFF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#7C5CFF" stop-opacity="0"/>
     </radialGradient>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M40 0H0V40" fill="none" stroke="#8AA0C8" stroke-opacity="0.08" stroke-width="1"/>
+    <radialGradient id="auroraB" cx="76%" cy="6%" r="58%">
+      <stop offset="0" stop-color="#4DE1FF" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#4DE1FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="auroraC" cx="88%" cy="88%" r="62%">
+      <stop offset="0" stop-color="#FF5CAA" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#FF5CAA" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="auroraD" cx="34%" cy="102%" r="56%">
+      <stop offset="0" stop-color="#FFB86B" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#FFB86B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="tileGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#7C5CFF" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#7C5CFF" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="34"/>
+    </filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5"/>
+      </feComponentTransfer>
+    </filter>
+    <pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.5" fill="#9AA3C4" opacity="0.13"/>
     </pattern>
   </defs>
 
-  <rect width="1280" height="640" fill="#070B14"/>
-  <rect width="1280" height="640" fill="url(#grid)"/>
-  <ellipse cx="860" cy="300" rx="520" ry="360" fill="url(#glow)"/>
+  <rect width="1280" height="640" fill="#06070E"/>
+  <rect width="1280" height="640" fill="url(#auroraA)"/>
+  <rect width="1280" height="640" fill="url(#auroraB)"/>
+  <rect width="1280" height="640" fill="url(#auroraC)"/>
+  <rect width="1280" height="640" fill="url(#auroraD)"/>
+  <rect width="1280" height="640" fill="url(#dots)"/>
 
-  <!-- monogram -->
-  <g transform="translate(120 176)">
-    <rect width="288" height="288" rx="64" fill="#0B1120" stroke="#22304D"/>
-    <g transform="translate(24 24) scale(0.46875)">
-      <circle cx="256" cy="256" r="212" fill="none" stroke="url(#mark)" stroke-opacity="0.45" stroke-width="3"/>
-      <circle cx="256" cy="44" r="7" fill="#22D3EE"/>
-      <path d="M150 120 H268 C348 120 392 180 392 256 C392 332 348 392 268 392 H150 Z" fill="url(#mark)"/>
-      <path d="M204 178 H266 C310 178 334 213 334 256 C334 299 310 334 266 334 H204 Z" fill="#0B1120"/>
-      <path d="M150 120 H268 C348 120 392 180 392 256" fill="none" stroke="#A5F3FC" stroke-opacity="0.75" stroke-width="4"/>
+  <!-- monogram tile -->
+  <g transform="translate(112 168)">
+    <rect x="0" y="0" width="304" height="304" rx="72" fill="#0A0C17" stroke="#2A2F4A"/>
+    <ellipse cx="152" cy="152" rx="200" ry="180" fill="url(#tileGlow)" filter="url(#soft)"/>
+    <g transform="translate(20 20) scale(0.515625)">
+      <circle cx="256" cy="256" r="206" fill="none" stroke="url(#mark)" stroke-opacity="0.42" stroke-width="2.4"/>
+      <circle cx="256" cy="50" r="7" fill="#4DE1FF"/>
+      <circle cx="424" cy="352" r="5" fill="#FF9BD2"/>
+      <path d="M146 118 H268 C350 118 394 178 394 256 C394 334 350 394 268 394 H146 Z" fill="url(#mark)"/>
+      <path d="M202 176 H266 C312 176 336 212 336 256 C336 300 312 336 266 336 H202 Z" fill="#0A0C17"/>
+      <path d="M146 118 H268 C350 118 394 178 394 256" fill="none" stroke="#FFE1F1" stroke-opacity="0.7" stroke-width="3.4"/>
     </g>
   </g>
 
   <!-- wordmark -->
-  <text x="468" y="292" fill="#F2F6FF" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="92" font-weight="800" letter-spacing="5">DEVARENT</text>
-  <text x="472" y="348" fill="url(#mark)" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="7">CLOUD · DATA · AI ENGINEERING</text>
-  <rect x="470" y="382" width="480" height="3" rx="2" fill="url(#rule)"/>
-  <text x="470" y="440" fill="#94A3C4" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="21">Terraform · AWS · Kubernetes · Databricks · 26 databases · 52 labs</text>
+  <text x="482" y="286" fill="url(#word)" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="94" font-weight="800" letter-spacing="4">DEVARENT</text>
+  <text x="486" y="340" fill="url(#mark)" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="8">CLOUD · DATA · AI ENGINEERING</text>
+  <rect x="486" y="370" width="560" height="2.5" rx="1.25" fill="url(#rule)"/>
+  <text x="486" y="424" fill="#A6AECB" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="20" letter-spacing="0.4">Terraform · AWS · Kubernetes · Databricks · 26 databases · 52 labs</text>
 
-  <g fill="#22D3EE">
-    <circle cx="1140" cy="120" r="5"/><circle cx="1180" cy="120" r="5"/><circle cx="1220" cy="120" r="5"/>
+  <!-- pill badges -->
+  <g font-family="Segoe UI, Helvetica Neue, Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.4">
+    <g transform="translate(486 462)">
+      <rect width="128" height="38" rx="19" fill="#7C5CFF" fill-opacity="0.14" stroke="#7C5CFF" stroke-opacity="0.45"/>
+      <text x="64" y="24" text-anchor="middle" fill="#C4B5FD">52 LABS</text>
+    </g>
+    <g transform="translate(626 462)">
+      <rect width="164" height="38" rx="19" fill="#4DE1FF" fill-opacity="0.1" stroke="#4DE1FF" stroke-opacity="0.35"/>
+      <text x="82" y="24" text-anchor="middle" fill="#7EE9FF">26 DATABASES</text>
+    </g>
+    <g transform="translate(802 462)">
+      <rect width="132" height="38" rx="19" fill="#FF5CAA" fill-opacity="0.1" stroke="#FF5CAA" stroke-opacity="0.35"/>
+      <text x="66" y="24" text-anchor="middle" fill="#FF9BD2">9 TRACKS</text>
+    </g>
+    <g transform="translate(946 462)">
+      <rect width="110" height="38" rx="19" fill="#FFB86B" fill-opacity="0.1" stroke="#FFB86B" stroke-opacity="0.32"/>
+      <text x="55" y="24" text-anchor="middle" fill="#FFCF9C">AWS</text>
+    </g>
   </g>
-  <g fill="#A855F7">
-    <circle cx="1140" cy="520" r="5"/><circle cx="1180" cy="520" r="5"/><circle cx="1220" cy="520" r="5"/>
+
+  <!-- orbit decor -->
+  <g opacity="0.5">
+    <circle cx="1108" cy="150" r="88" fill="none" stroke="#4DE1FF" stroke-opacity="0.35" stroke-width="1.2"/>
+    <circle cx="1108" cy="150" r="132" fill="none" stroke="#8B5CF6" stroke-opacity="0.25" stroke-width="1"/>
+    <circle cx="1108" cy="62" r="5" fill="#4DE1FF"/>
+    <circle cx="1234" cy="176" r="3.5" fill="#FF9BD2"/>
+    <circle cx="1024" cy="214" r="3" fill="#FFB86B"/>
   </g>
+
+  <rect width="1280" height="640" filter="url(#grain)" opacity="0.14" style="mix-blend-mode:overlay"/>
 </svg>
